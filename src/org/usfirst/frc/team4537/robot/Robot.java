@@ -61,13 +61,13 @@ public class Robot extends SampleRobot {
 	private double leftSign = 1;
 	private double rightSign = 1;
 
-	private int direction = -1;
+	private int direction = 1;
 	private double speedMultiplier = 0.5;
 	
+	private double previousLeftSpeed = 0;
+	private double previousRightSpeed = 0;
 	private boolean button2Pressed = false;
 	private boolean ready2Change = false;
-	
-	private boolean db0Test = false;
 	
     public Robot() {
     	
@@ -126,9 +126,20 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
         while (isOperatorControl() && isEnabled()) {
             //myRobot.tankDrive(leftstick, rightstick); // drive with arcade style (use right stick)
-            
-        	///*// Commented cause it's broken af
-        	db0Test = SmartDashboard.getBoolean("DB/Button 0", false);
+        	
+        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2)) { //|| SmartDashboard.getBoolean("DB/Button 0", false)
+        		if(previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
+        			button2Pressed = true;
+        			if (button2Pressed && ready2Change) {
+        				direction *= -1;
+        				button2Pressed = false;
+        				ready2Change = false;
+        			}
+        		}
+        	}
+        	else {
+        		ready2Change = true;
+        	}
         	
         	leftControl = rightStick.getRawAxis(1);
         	rightControl = leftStick.getRawAxis(1);
@@ -145,30 +156,8 @@ public class Robot extends SampleRobot {
         	
         	leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
         	rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
-        	
-        	//System.out.println(leftstick.getRawAxis(2));
-        	//System.out.println(rightstick.getRawAxis(2));
-        	
-        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2) || SmartDashboard.getBoolean("DB/Button 0", false)) {
-        		button2Pressed = true;
-        		if (button2Pressed && ready2Change) {
-        			direction *= -1;
-        			button2Pressed = false;
-        			ready2Change = false;
-        		}
-        	}
-        	else {
-        		ready2Change = true;
-        	}
-        	
-        	SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(direction));
-        	SmartDashboard.putBoolean("DB/LED 0", db0Test);
-        	SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(leftSpeed));
-        	SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(rightSpeed));
-        	//*/
-        	
-        	//leftSpeed = Math.pow(leftStick.getRawAxis(1),  1) * direction * speedMultiplier * (1 - leftStick.getRawAxis(2));
-        	//rightSpeed = Math.pow(rightStick.getRawAxis(1),  1) * direction * speedMultiplier * (1 - leftStick.getRawAxis(2));
+        	previousLeftSpeed = leftSpeed;
+        	previousRightSpeed = rightSpeed;
         	
         	// Left side
         	motor1.set(leftSpeed);
@@ -181,17 +170,21 @@ public class Robot extends SampleRobot {
         	motor6.set(rightSpeed);
             
         	//Aux Motor
-        	//System.out.println(rightstick.getRawAxis(2));
         	if(leftStick.getRawButton(1)) {
-        		auxMotor.set((1 - rightStick.getRawAxis(2))*0.75); //0.75
+        		auxMotor.set((1-rightStick.getRawAxis(2))*0.75);
         	}
         	else if(rightStick.getRawButton(1)) {
-        		auxMotor.set(-(1 - rightStick.getRawAxis(2))*0.75);
+        		auxMotor.set(-(1-rightStick.getRawAxis(2))*0.75);
         	}
         	else {
         		auxMotor.set(0);
         	}
         	
+        	System.out.println("Aux: " + Double.toString(1-rightStick.getRawAxis(2)*0.75));
+        	SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(direction));
+        	SmartDashboard.putBoolean("DB/LED 0", SmartDashboard.getBoolean("DB/Button 0", false));
+        	SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(leftSpeed));
+        	SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(rightSpeed));
         	
             Timer.delay(0.005); // wait for a motor update time
         }
