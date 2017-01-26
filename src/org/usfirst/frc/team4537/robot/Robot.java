@@ -54,17 +54,23 @@ public class Robot extends SampleRobot {
 	CANTalon motor6;
 	private Victor auxMotor;
 	
-	
+	//Tank definitions
 	private double rightControl = 0;
 	private double leftControl = 0;
 	private double leftSpeed = 0;
 	private double rightSpeed = 0;
 	private double leftSign = 1;
 	private double rightSign = 1;
+	//Arcade definitions
 	private double moveValue = 0;
 	private double rotateValue = 0;
+	private double moveSign = 0;
+	private double rotateSign = 0;
+	private double mDeadzone = 0.05;
+	private double rDeadzone = 0.1;
 
 	private int direction = 1;
+	//Speed limiter
 	private double speedMultiplier = 0.5;
 	
 	private double previousLeftSpeed = 0;
@@ -75,7 +81,8 @@ public class Robot extends SampleRobot {
 	
     public Robot() {
     	
-    	// Left motors
+    	//For all that is good in this world, DO NOT touch or breathe on these
+    	//Left motors
     	motor1 = new CANTalon(MOTOR_1); //frontLeftMotor
     	motor1.setExpiration(0.1);
     	motor1.setInverted(true);
@@ -86,7 +93,7 @@ public class Robot extends SampleRobot {
     	motor3.setExpiration(0.1);
     	motor3.setInverted(true);
     	
-    	// Right motors
+    	//Right motors
     	motor4 = new CANTalon(MOTOR_4); //frontRightMotor
     	motor4.setExpiration(0.1);
     	motor5 = new CANTalon(MOTOR_5); //middleRightMotor
@@ -95,8 +102,8 @@ public class Robot extends SampleRobot {
     	motor6.setExpiration(0.1);
     
     	auxMotor = new Victor(0);
-    		
-    	 
+    	
+    	
         //myRobot = new RobotDrive(motor1, motor2, motor3, motor4, motor5, motor6);
         //myRobot.setExpiration(0.1);
         leftStick = new Joystick(0);
@@ -130,11 +137,14 @@ public class Robot extends SampleRobot {
 	@Override
     public void operatorControl() {
         while (isOperatorControl() && isEnabled()) {
-            //myRobot.tankDrive(leftstick, rightstick); // drive with arcade style (use right stick)
+            //myRobot.tankDrive(leftStick, rightStick); //drive with arcade style (use right stick)
         	
+        	//Get drive functions from the dashboard
         	arcade = SmartDashboard.getBoolean("DB/Button 0", false);
+        	speedMultiplier = SmartDashboard.getNumber("DB/Slider 0", 0.75)/5;
+        	SmartDashboard.putNumber("DB/Slider 1", speedMultiplier);
         	
-        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2)) {
+        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2) || arcadeStick.getRawButton(2)) {
         		if(previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
         			button2Pressed = true;
         			if (button2Pressed && ready2Change) {
@@ -157,20 +167,33 @@ public class Robot extends SampleRobot {
         		}
         	
         		leftSign = -1;
-        		if(leftControl > 0) leftSign = 1;
-        	
         		rightSign = -1;
+        		if(leftControl > 0) leftSign = 1;
         		if(rightControl > 0) rightSign = 1;
         	
-        		leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
-        		rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
+        		leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * (1 - leftStick.getRawAxis(2));
+        		rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * (1 - leftStick.getRawAxis(2));
         		previousLeftSpeed = leftSpeed;
         		previousRightSpeed = rightSpeed;
         	}
         	
         	if (arcade == true) {
-        		moveValue = arcadeStick.getRawAxis(1);
+        		moveValue = arcadeStick.getRawAxis(1) * direction;
         		rotateValue = arcadeStick.getRawAxis(3);
+        		
+        		moveSign = -1;
+        		rotateSign = -1;
+        		if(moveValue > 0) moveSign = 1;
+        		if(rotateValue > 0) rotateSign = 1;
+        		
+        		moveValue = Math.pow(moveValue, 2) * moveSign;
+        		rotateValue = Math.pow(rotateValue, 2) * rotateSign;
+        		
+        		//Joystick deadzones
+        		if (moveValue < mDeadzone && moveValue > -mDeadzone) moveValue = 0;
+        		if (rotateValue < rDeadzone && rotateValue > -rDeadzone) rotateValue = 0;
+        		
+        		//Mathy arcadey stuffy
         		if (moveValue > 0) {
         			if (rotateValue > 0) {
         				leftSpeed = moveValue - rotateValue;
@@ -191,6 +214,8 @@ public class Robot extends SampleRobot {
         				rightSpeed = -Math.max(-moveValue, -rotateValue);
         			}
         		}
+        		leftSpeed *= (1 - arcadeStick.getRawAxis(2));
+        		rightSpeed *= (1 - arcadeStick.getRawAxis(2));
         	}
         	
         	//Set Maximum and Minimum
@@ -199,12 +224,17 @@ public class Robot extends SampleRobot {
         	rightSpeed = Math.max(rightSpeed, -1);
         	rightSpeed = Math.min(rightSpeed, 1);
         	
-        	// Left side
+        	//Apple speed limit
+        	leftSpeed *= speedMultiplier;
+        	rightSpeed *= speedMultiplier;
+        	
+        	//For all that is good in this world, DO NOT touch or breathe on these
+        	//Left side
         	motor1.set(leftSpeed);
         	motor2.set(leftSpeed);
         	motor3.set(leftSpeed);
         	
-        	// Right Side
+        	//Right Side
            	motor4.set(rightSpeed);
         	motor5.set(rightSpeed);
         	motor6.set(rightSpeed);
