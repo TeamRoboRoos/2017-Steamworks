@@ -37,6 +37,7 @@ public class Robot extends SampleRobot {
 	
     Joystick leftStick;
     Joystick rightStick;
+    Joystick arcadeStick;
     
 	private final int MOTOR_1 = 1;
 	private final int MOTOR_2 = 2;
@@ -60,6 +61,8 @@ public class Robot extends SampleRobot {
 	private double rightSpeed = 0;
 	private double leftSign = 1;
 	private double rightSign = 1;
+	private double moveValue = 0;
+	private double rotateValue = 0;
 
 	private int direction = 1;
 	private double speedMultiplier = 0.5;
@@ -68,6 +71,7 @@ public class Robot extends SampleRobot {
 	private double previousRightSpeed = 0;
 	private boolean button2Pressed = false;
 	private boolean ready2Change = false;
+	private boolean arcade = false;
 	
     public Robot() {
     	
@@ -97,6 +101,7 @@ public class Robot extends SampleRobot {
         //myRobot.setExpiration(0.1);
         leftStick = new Joystick(0);
         rightStick = new Joystick(1);
+        arcadeStick = new Joystick(2);
     }
 
 	@Override
@@ -127,7 +132,9 @@ public class Robot extends SampleRobot {
         while (isOperatorControl() && isEnabled()) {
             //myRobot.tankDrive(leftstick, rightstick); // drive with arcade style (use right stick)
         	
-        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2)) { //|| SmartDashboard.getBoolean("DB/Button 0", false)
+        	arcade = SmartDashboard.getBoolean("DB/Button 0", false);
+        	
+        	if (rightStick.getRawButton(2) || leftStick.getRawButton(2)) {
         		if(previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
         			button2Pressed = true;
         			if (button2Pressed && ready2Change) {
@@ -141,23 +148,56 @@ public class Robot extends SampleRobot {
         		ready2Change = true;
         	}
         	
-        	leftControl = rightStick.getRawAxis(1);
-        	rightControl = leftStick.getRawAxis(1);
-        	if(direction > 0) {
-        		leftControl = leftStick.getRawAxis(1);
-        		rightControl = rightStick.getRawAxis(1);
+        	if (arcade == false) {
+        		leftControl = rightStick.getRawAxis(1);
+        		rightControl = leftStick.getRawAxis(1);
+        		if(direction > 0) {
+        			leftControl = leftStick.getRawAxis(1);
+        			rightControl = rightStick.getRawAxis(1);
+        		}
+        	
+        		leftSign = -1;
+        		if(leftControl > 0) leftSign = 1;
+        	
+        		rightSign = -1;
+        		if(rightControl > 0) rightSign = 1;
+        	
+        		leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
+        		rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
+        		previousLeftSpeed = leftSpeed;
+        		previousRightSpeed = rightSpeed;
         	}
         	
-        	leftSign = -1;
-        	if(leftControl > 0) leftSign = 1;
+        	if (arcade == true) {
+        		moveValue = arcadeStick.getRawAxis(1);
+        		rotateValue = arcadeStick.getRawAxis(3);
+        		if (moveValue > 0) {
+        			if (rotateValue > 0) {
+        				leftSpeed = moveValue - rotateValue;
+        				rightSpeed = Math.max(moveValue, rotateValue);
+        			}
+        			else {
+        				leftSpeed = Math.max(moveValue, -rotateValue);
+        				rightSpeed = moveValue + rotateValue;
+        			}
+        		}
+        		else {
+        			if (rotateValue > 0) {
+        				leftSpeed = -Math.max(-moveValue, rotateValue);
+        				rightSpeed = moveValue + rotateValue;
+        			}
+        			else {
+        				leftSpeed = moveValue - rotateValue;
+        				rightSpeed = -Math.max(-moveValue, -rotateValue);
+        			}
+        		}
+        	}
         	
-        	rightSign = -1;
-        	if(rightControl > 0) rightSign = 1;
-        	
-        	leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
-        	rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * speedMultiplier * (1 - leftStick.getRawAxis(2));
-        	previousLeftSpeed = leftSpeed;
-        	previousRightSpeed = rightSpeed;
+        	//Set Maximum and Minimum
+        	leftSpeed = Math.max(leftSpeed, -1);
+        	leftSpeed = Math.min(leftSpeed, 1);
+        	rightSpeed = Math.max(rightSpeed, -1);
+        	rightSpeed = Math.min(rightSpeed, 1);
         	
         	// Left side
         	motor1.set(leftSpeed);
