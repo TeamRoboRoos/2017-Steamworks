@@ -67,9 +67,10 @@ public class Robot extends SampleRobot {
 	private double moveSign = 0;
 	private double rotateSign = 0;
 	private double mDeadzone = 0.05;
-	private double rDeadzone = 0.1;
+	private double rDeadzone = 0.075;
 
 	private int direction = 1;
+	private double powerThingy = 3;
 	//Speed limiter
 	private double speedMultiplier = 0.5;
 	
@@ -113,8 +114,8 @@ public class Robot extends SampleRobot {
 
 	@Override
     public void robotInit() {
-		CameraServer.getInstance().startAutomaticCapture(0);
-		CameraServer.getInstance().startAutomaticCapture(1);
+		CameraServer.getInstance().startAutomaticCapture("Battery", 0);
+		CameraServer.getInstance().startAutomaticCapture("Loader", 1);
     }
 
 	/**
@@ -165,14 +166,16 @@ public class Robot extends SampleRobot {
         			leftControl = leftStick.getRawAxis(1);
         			rightControl = rightStick.getRawAxis(1);
         		}
-        	
-        		leftSign = -1;
-        		rightSign = -1;
-        		if(leftControl > 0) leftSign = 1;
-        		if(rightControl > 0) rightSign = 1;
-        	
-        		leftSpeed = Math.pow(leftControl,  2) * direction * leftSign * (1 - leftStick.getRawAxis(2));
-        		rightSpeed = Math.pow(rightControl,  2) * direction * rightSign * (1 - leftStick.getRawAxis(2));
+        		
+        		leftSign = 1;
+        		rightSign = 1;
+        		if(powerThingy/2 == Math.floor(powerThingy/2)) {
+        			if(leftControl < 0) leftSign = -1;
+        			if(rightControl < 0) rightSign = -1;
+        		}
+        		
+        		leftSpeed = Math.pow(leftControl,  powerThingy) * direction * leftSign * (1 - leftStick.getRawAxis(2));
+        		rightSpeed = Math.pow(rightControl,  powerThingy) * direction * rightSign * (1 - leftStick.getRawAxis(2));
         		previousLeftSpeed = leftSpeed;
         		previousRightSpeed = rightSpeed;
         	}
@@ -181,17 +184,24 @@ public class Robot extends SampleRobot {
         		moveValue = arcadeStick.getRawAxis(1) * direction;
         		rotateValue = arcadeStick.getRawAxis(3);
         		
-        		moveSign = -1;
-        		rotateSign = -1;
-        		if(moveValue > 0) moveSign = 1;
-        		if(rotateValue > 0) rotateSign = 1;
+        		moveSign = 1;
+        		rotateSign = 1;
+        		if(powerThingy/2 == Math.floor(powerThingy/2)) {
+        			if(moveValue < 0) moveSign = -1;
+        			if(rotateValue < 0) rotateSign = -1;
+        		}
         		
-        		moveValue = Math.pow(moveValue, 2) * moveSign;
-        		rotateValue = Math.pow(rotateValue, 2) * rotateSign;
+        		moveValue = Math.pow(moveValue, powerThingy) * moveSign;
+        		rotateValue = Math.pow(rotateValue, powerThingy) * rotateSign;
         		
         		//Joystick deadzones
         		if (moveValue < mDeadzone && moveValue > -mDeadzone) moveValue = 0;
         		if (rotateValue < rDeadzone && rotateValue > -rDeadzone) rotateValue = 0;
+        		
+        		if (arcadeStick.getRawButton(5) == true || arcadeStick.getRawButton(6) == true) {
+        			moveValue *= 0.5;
+            		rotateValue *= 0.5;
+            	}
         		
         		//Mathy arcadey stuffy
         		if (moveValue > 0) {
@@ -211,6 +221,7 @@ public class Robot extends SampleRobot {
         			}
         			else {
         				leftSpeed = moveValue - rotateValue;
+        				
         				rightSpeed = -Math.max(-moveValue, -rotateValue);
         			}
         		}
