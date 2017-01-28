@@ -7,9 +7,12 @@ import com.ctre.CANTalon;
 
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+
 import java.lang.Math;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -38,6 +41,7 @@ public class Robot extends SampleRobot {
     Joystick leftStick;
     Joystick rightStick;
     Joystick arcadeStick;
+    PowerDistributionPanel pdp;
     
 	private final int MOTOR_1 = 1;
 	private final int MOTOR_2 = 2;
@@ -54,31 +58,51 @@ public class Robot extends SampleRobot {
 	CANTalon motor6;
 	private Victor auxMotor;
 	
-	//Tank definitions
+	/*//Tank definitions
 	private double rightControl = 0;
 	private double leftControl = 0;
+	private double leftSign = 1;
+	private double rightSign = 1;*/
+	
+	//Arcade definitions
 	private double leftSpeed = 0;
 	private double rightSpeed = 0;
-	private double leftSign = 1;
-	private double rightSign = 1;
-	//Arcade definitions
 	private double moveValue = 0;
 	private double rotateValue = 0;
-	private double moveSign = 0;
-	private double rotateSign = 0;
+	private double moveSign = 1;
+	private double rotateSign = 1;
+	private boolean preserveSign = false;
 	private double mDeadzone = 0.05;
-	private double rDeadzone = 0.075;
+	private double rDeadzone = 0.05;
 
-	private int direction = 1;
+	private int direction = -1;
 	private double powerThingy = 3;
+	
 	//Speed limiter
 	private double speedMultiplier = 0.5;
+	
+	//Acceleration limiter
+	private double previousMoveValue = 0;
+	private double previousRotateValue = 0;
+	private double maxMoveAcceleration = 0.01;
+	private double maxMoveDeceleration = 0.05;
+	private double maxRotateAcceleration = 0.05;
+	private double maxRotateDeceleration = 0.05;
 	
 	private double previousLeftSpeed = 0;
 	private double previousRightSpeed = 0;
 	private boolean button2Pressed = false;
 	private boolean ready2Change = false;
-	private boolean arcade = false;
+	private boolean accCode = true;
+	
+	private double leftCurrent = 0;
+	private double rightCurrent = 0;
+	private double climberCurrent = 0;
+	
+	private double climberSpeed = 0;
+	
+	private int loopIterations = 0;
+	private long systemTime = 0;
 	
     public Robot() {
     	
@@ -110,12 +134,15 @@ public class Robot extends SampleRobot {
         leftStick = new Joystick(0);
         rightStick = new Joystick(1);
         arcadeStick = new Joystick(2);
+        
+        pdp = new PowerDistributionPanel();
     }
 
 	@Override
     public void robotInit() {
 		CameraServer.getInstance().startAutomaticCapture("Battery", 0);
 		CameraServer.getInstance().startAutomaticCapture("Loader", 1);
+		SmartDashboard.putBoolean("DB/Button 0", accCode);
     }
 
 	/**
@@ -141,12 +168,18 @@ public class Robot extends SampleRobot {
             //myRobot.tankDrive(leftStick, rightStick); //drive with arcade style (use right stick)
         	
         	//Get drive functions from the dashboard
-        	arcade = SmartDashboard.getBoolean("DB/Button 0", false);
-        	speedMultiplier = SmartDashboard.getNumber("DB/Slider 0", 0.75)/5;
-        	SmartDashboard.putNumber("DB/Slider 1", speedMultiplier);
+        	loopIterations++;
+        	systemTime = System.currentTimeMillis();
+        	
+        	//SmartDashboard.putString("DB/String 3", Double.toString(loopIterations));
+        	//SmartDashboard.putString("DB/String 4", Double.toString(systemTime));
+        	
+        	accCode = SmartDashboard.getBoolean("DB/Button 0", false);
+        	speedMultiplier = Math.min(SmartDashboard.getNumber("DB/Slider 0", 0.75), 1);
+        	climberSpeed = Math.min(SmartDashboard.getNumber("DB/Slider 1", 0.75), 1);
         	
         	if (rightStick.getRawButton(2) || leftStick.getRawButton(2) || arcadeStick.getRawButton(2)) {
-        		if(previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
+        		if (previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
         			button2Pressed = true;
         			if (button2Pressed && ready2Change) {
         				direction *= -1;
@@ -158,51 +191,97 @@ public class Robot extends SampleRobot {
         	else {
         		ready2Change = true;
         	}
-        	
+        	/*//Tank drive has been dropped
         	if (arcade == false) {
         		leftControl = rightStick.getRawAxis(1);
         		rightControl = leftStick.getRawAxis(1);
-        		if(direction > 0) {
+        		if (direction > 0) {
         			leftControl = leftStick.getRawAxis(1);
         			rightControl = rightStick.getRawAxis(1);
         		}
         		
         		leftSign = 1;
         		rightSign = 1;
-        		if(powerThingy/2 == Math.floor(powerThingy/2)) {
-        			if(leftControl < 0) leftSign = -1;
-        			if(rightControl < 0) rightSign = -1;
+        		if (powerThingy/2 == Math.floor(powerThingy/2)) {
+        			if (leftControl < 0) leftSign = -1;
+        			if (rightControl < 0) rightSign = -1;
         		}
         		
         		leftSpeed = Math.pow(leftControl,  powerThingy) * direction * leftSign * (1 - leftStick.getRawAxis(2));
         		rightSpeed = Math.pow(rightControl,  powerThingy) * direction * rightSign * (1 - leftStick.getRawAxis(2));
-        		previousLeftSpeed = leftSpeed;
-        		previousRightSpeed = rightSpeed;
-        	}
+        	}*/
         	
-        	if (arcade == true) {
+        	//The multiple 'true's and single false are vital for this code to work; Ignore the dead warning...
+        	if (true || true || true || false) {
         		moveValue = arcadeStick.getRawAxis(1) * direction;
         		rotateValue = arcadeStick.getRawAxis(3);
         		
         		moveSign = 1;
         		rotateSign = 1;
-        		if(powerThingy/2 == Math.floor(powerThingy/2)) {
-        			if(moveValue < 0) moveSign = -1;
-        			if(rotateValue < 0) rotateSign = -1;
+        		preserveSign = false;
+        		if (moveValue < 0) {
+        			moveSign = -1;
+        		}
+        		if (rotateValue < 0) {
+        			rotateSign = -1;
+        		}
+        		if (powerThingy/2 == Math.floor(powerThingy/2)) { //Check if sign needs to be preserved
+        			preserveSign = true;
         		}
         		
-        		moveValue = Math.pow(moveValue, powerThingy) * moveSign;
-        		rotateValue = Math.pow(rotateValue, powerThingy) * rotateSign;
+        		moveValue = Math.pow(moveValue, powerThingy);
+        		rotateValue = Math.pow(rotateValue, powerThingy);
+        		if (preserveSign) {
+        			moveValue *= moveSign;
+        			rotateValue *= rotateSign;
+        		}
         		
         		//Joystick deadzones
-        		if (moveValue < mDeadzone && moveValue > -mDeadzone) moveValue = 0;
-        		if (rotateValue < rDeadzone && rotateValue > -rDeadzone) rotateValue = 0;
+        		if (/*Bryce was here ||*/moveValue < mDeadzone && moveValue > -mDeadzone) {
+        			moveValue = 0;
+        		}
+        		if (rotateValue < rDeadzone && rotateValue > -rDeadzone) {
+        			rotateValue = 0;
+        		}
         		
         		if (arcadeStick.getRawButton(5) == true || arcadeStick.getRawButton(6) == true) {
         			moveValue *= 0.5;
             		rotateValue *= 0.5;
             	}
         		
+        		//Check acceleraton limitation
+            	moveValue = Math.abs(moveValue);
+            	rotateValue = Math.abs(rotateValue);
+        		
+            	System.out.println("moveV   : " + moveValue);
+            	System.out.println("rotateV : " + rotateValue);
+            	System.out.println("PmoveV  : " + previousMoveValue);
+            	System.out.println("ProtateV: " + previousRotateValue);
+            	
+        		if (moveValue > previousMoveValue + maxMoveAcceleration) {
+        			moveValue = previousMoveValue + maxMoveAcceleration;
+        			//System.out.println("moveT   : True");
+        		}
+        		else {
+        			//System.out.println("moveT   : False");
+        		}
+            	if (moveValue < previousMoveValue - maxMoveDeceleration) {
+            		moveValue = previousMoveValue - maxMoveDeceleration;
+            	}
+            	if (rotateValue > previousRotateValue + maxRotateAcceleration) {
+            		rotateValue = previousRotateValue + maxRotateAcceleration;
+            		//System.out.println("rotateT : True");
+            	}
+            	else {
+            		//System.out.println("rotateT : False");
+            	}
+            	//else if (rotateValue < previousRotateValue - maxRotateDeceleration) rotateValue = previousRotateValue - maxRotateDeceleration;
+            	
+            	previousMoveValue = moveValue;
+            	previousRotateValue = rotateValue;
+        		moveValue *= moveSign;
+        		rotateValue *= rotateSign;
+            	
         		//Mathy arcadey stuffy
         		if (moveValue > 0) {
         			if (rotateValue > 0) {
@@ -221,13 +300,15 @@ public class Robot extends SampleRobot {
         			}
         			else {
         				leftSpeed = moveValue - rotateValue;
-        				
         				rightSpeed = -Math.max(-moveValue, -rotateValue);
         			}
         		}
         		leftSpeed *= (1 - arcadeStick.getRawAxis(2));
         		rightSpeed *= (1 - arcadeStick.getRawAxis(2));
         	}
+        	
+    		previousLeftSpeed = leftSpeed;
+    		previousRightSpeed = rightSpeed;
         	
         	//Set Maximum and Minimum
         	leftSpeed = Math.max(leftSpeed, -1);
@@ -251,21 +332,33 @@ public class Robot extends SampleRobot {
         	motor6.set(rightSpeed);
             
         	//Aux Motor
-        	if(leftStick.getRawButton(1)) {
-        		auxMotor.set((1-rightStick.getRawAxis(2))*0.75);
+        	if (arcadeStick.getRawButton(1)) {
+        		auxMotor.set(climberSpeed);
+        		System.out.println(Double.toString(climberSpeed));
         	}
-        	else if(rightStick.getRawButton(1)) {
-        		auxMotor.set(-(1-rightStick.getRawAxis(2))*0.75);
+        	else if (arcadeStick.getRawButton(3)) {
+        		auxMotor.set(-climberSpeed/4);
+        		System.out.println(Double.toString(-climberSpeed/4));
         	}
         	else {
         		auxMotor.set(0);
+        		//System.out.println("No Climb");
         	}
         	
-        	System.out.println("Aux: " + Double.toString(1-rightStick.getRawAxis(2)*0.75));
+        	//Calculate robot drive power draw
+        	leftCurrent = pdp.getCurrent(0) + pdp.getCurrent(1) + pdp.getCurrent(2);
+        	rightCurrent = pdp.getCurrent(13) + pdp.getCurrent(14) + pdp.getCurrent(15);
+        	climberCurrent = pdp.getCurrent(12);
+        	
+        	//System.out.println("Aux: " + Double.toString(1-rightStick.getRawAxis(2)*0.75));
+        	SmartDashboard.putString("DB/String 2", "LCurrent: " + Double.toString(leftCurrent) + "A");
+        	SmartDashboard.putString("DB/String 7", "RCurrent: " + Double.toString(rightCurrent) + "A");
+        	SmartDashboard.putString("DB/String 9", "CCurrent: " + Double.toString(climberCurrent) + "A");
         	SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(direction));
-        	SmartDashboard.putBoolean("DB/LED 0", SmartDashboard.getBoolean("DB/Button 0", false));
+        	SmartDashboard.putString("DB/String 5", DriverStation.getInstance().getAlliance() + " " + Integer.toString(DriverStation.getInstance().getLocation()));
         	SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(leftSpeed));
         	SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(rightSpeed));
+        	SmartDashboard.putBoolean("DB/LED 0", accCode);
         	
             Timer.delay(0.005); // wait for a motor update time
         }
