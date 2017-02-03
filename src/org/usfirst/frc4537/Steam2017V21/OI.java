@@ -20,7 +20,7 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
- * interface to the commands and command groups that allow control of the robot.
+ * interface to the commands and comm`		and groups that allow control of the robot.
  */
 public class OI {
     //// CREATING BUTTONS
@@ -78,7 +78,7 @@ public class OI {
         // SmartDashboard Buttons
         SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
         SmartDashboard.putData("cameraStart", new cameraStart());
-        SmartDashboard.putData("climb", new climb());
+        //SmartDashboard.putData("climb", new climb());
         SmartDashboard.putData("climbReset", new climbReset());
         SmartDashboard.putData("climbStop", new climbStop());
         SmartDashboard.putData("compressorStart", new compressorStart());
