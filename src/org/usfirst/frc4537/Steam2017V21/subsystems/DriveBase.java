@@ -83,9 +83,9 @@ public class DriveBase extends Subsystem {
 		moveValue=speed;
 		rotateValue=turn;
 
-		moveSign = 1;
+		moveSign = -1;
 		if (moveValue < 0) {
-			moveSign = -1;
+			moveSign = 1;
 		}
 		rotateSign=1;
 		if (rotateValue < 0) {
