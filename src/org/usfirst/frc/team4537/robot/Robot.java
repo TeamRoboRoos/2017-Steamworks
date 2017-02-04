@@ -72,11 +72,11 @@ public class Robot extends SampleRobot {
 	private double moveSign = 1;
 	private double rotateSign = 1;
 	private boolean preserveSign = false;
-	private double mDeadzone = 0.05;
-	private double rDeadzone = 0.05;
+	private double mDeadzone = 0.01;
+	private double rDeadzone = 0.01;
 
 	private int direction = -1;
-	private double powerThingy = 3;
+	private double powerThingy = 2;
 	
 	//Speed limiter
 	private double speedMultiplier = 0.5;
@@ -98,6 +98,8 @@ public class Robot extends SampleRobot {
 	private double leftCurrent = 0;
 	private double rightCurrent = 0;
 	private double climberCurrent = 0;
+	
+	private double turnAngle = 0;
 	
 	private double climberSpeed = 0;
 	
@@ -166,6 +168,7 @@ public class Robot extends SampleRobot {
     public void operatorControl() {
         while (isOperatorControl() && isEnabled()) {
             //myRobot.tankDrive(leftStick, rightStick); //drive with arcade style (use right stick)
+        	//12,274 pulses per metre
         	
         	//Get drive functions from the dashboard
         	loopIterations++;
@@ -191,6 +194,7 @@ public class Robot extends SampleRobot {
         	else {
         		ready2Change = true;
         	}
+        	
         	/*//Tank drive has been dropped
         	if (arcade == false) {
         		leftControl = rightStick.getRawAxis(1);
@@ -252,28 +256,15 @@ public class Robot extends SampleRobot {
         		//Check acceleraton limitation
             	moveValue = Math.abs(moveValue);
             	rotateValue = Math.abs(rotateValue);
-        		
-            	System.out.println("moveV   : " + moveValue);
-            	System.out.println("rotateV : " + rotateValue);
-            	System.out.println("PmoveV  : " + previousMoveValue);
-            	System.out.println("ProtateV: " + previousRotateValue);
             	
         		if (moveValue > previousMoveValue + maxMoveAcceleration) {
         			moveValue = previousMoveValue + maxMoveAcceleration;
-        			//System.out.println("moveT   : True");
-        		}
-        		else {
-        			//System.out.println("moveT   : False");
         		}
             	if (moveValue < previousMoveValue - maxMoveDeceleration) {
             		moveValue = previousMoveValue - maxMoveDeceleration;
             	}
             	if (rotateValue > previousRotateValue + maxRotateAcceleration) {
             		rotateValue = previousRotateValue + maxRotateAcceleration;
-            		//System.out.println("rotateT : True");
-            	}
-            	else {
-            		//System.out.println("rotateT : False");
             	}
             	//else if (rotateValue < previousRotateValue - maxRotateDeceleration) rotateValue = previousRotateValue - maxRotateDeceleration;
             	
@@ -309,14 +300,48 @@ public class Robot extends SampleRobot {
         	
     		previousLeftSpeed = leftSpeed;
     		previousRightSpeed = rightSpeed;
+    		
+    		System.out.println("*LENC : " + Double.toString(motor3.getEncPosition()));
+        	System.out.println("*RENC : " + Double.toString(-motor4.getEncPosition()));
         	
-        	//Set Maximum and Minimum
+        	if (arcadeStick.getRawButton(6)) {
+        		turnAngle = (SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0)); //*72
+        		//Ticks per metre: 12557
+        		
+        		System.out.println("OAngle: " + Double.toString(turnAngle));
+        		if (turnAngle != 0) {
+        			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
+        		}
+        		System.out.println("BAngle: " + Double.toString(turnAngle));
+        		turnAngle *= 12557;
+        		System.out.println("AAngle: " + Double.toString(turnAngle));
+        		
+        		if (motor3.getEncPosition() < turnAngle) { //146
+        			leftSpeed = 0.15;
+        			System.out.println("L+");
+        		}
+        		else if (motor3.getEncPosition() > turnAngle){
+        			leftSpeed = -0.15;
+        			System.out.println("L-");
+        		}
+        		
+        		if (-motor4.getEncPosition() < -turnAngle) { //146
+        			rightSpeed = 0.15;
+        			System.out.println("R+");
+        		}
+        		else if (-motor4.getEncPosition() > -turnAngle){
+        			rightSpeed = -0.15;
+        			System.out.println("R-");
+        		}
+        	}
+        
+    		//Set Maximum and Minimum
         	leftSpeed = Math.max(leftSpeed, -1);
         	leftSpeed = Math.min(leftSpeed, 1);
         	rightSpeed = Math.max(rightSpeed, -1);
         	rightSpeed = Math.min(rightSpeed, 1);
         	
-        	//Apple speed limit
+        	//Apply speed limit
         	leftSpeed *= speedMultiplier;
         	rightSpeed *= speedMultiplier;
         	
@@ -330,15 +355,20 @@ public class Robot extends SampleRobot {
            	motor4.set(rightSpeed);
         	motor5.set(rightSpeed);
         	motor6.set(rightSpeed);
-            
+                    	
+        	if (arcadeStick.getRawButton(5)) {
+        		motor3.setEncPosition(0);
+        		motor4.setEncPosition(0);
+        	}
+        	
         	//Aux Motor
         	if (arcadeStick.getRawButton(1)) {
         		auxMotor.set(climberSpeed);
-        		System.out.println(Double.toString(climberSpeed));
+        		//System.out.println(Double.toString(climberSpeed));
         	}
         	else if (arcadeStick.getRawButton(3)) {
         		auxMotor.set(-climberSpeed/4);
-        		System.out.println(Double.toString(-climberSpeed/4));
+        		//System.out.println(Double.toString(-climberSpeed/4));
         	}
         	else {
         		auxMotor.set(0);
@@ -359,8 +389,8 @@ public class Robot extends SampleRobot {
         	SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(leftSpeed));
         	SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(rightSpeed));
         	SmartDashboard.putBoolean("DB/LED 0", accCode);
-        	
-            Timer.delay(0.005); // wait for a motor update time
+
+        	Timer.delay(0.005); // wait for a motor update time
         }
     }
 
