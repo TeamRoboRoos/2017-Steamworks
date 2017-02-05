@@ -8,6 +8,7 @@ import com.ctre.CANTalon;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GyroBase;
 
 import java.lang.Math;
 
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -38,8 +40,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends SampleRobot {
 
-	Joystick leftStick;
-	Joystick rightStick;
+	//Joystick leftStick;
+	//Joystick rightStick;
 	Joystick arcadeStick;
 	PowerDistributionPanel pdp;
 
@@ -93,11 +95,11 @@ public class Robot extends SampleRobot {
 	//Climber variables
 	private double climberSpeed = 0;
 
-	////System telemetary
+	////System telemetry
 	//private int loopIterations = 0;
 	//private long systemTime = 0;
 
-	//Robot telemetary
+	//Robot telemetry
 	private double leftCurrent = 0;
 	private double rightCurrent = 0;
 	private double climberCurrent = 0;
@@ -109,6 +111,7 @@ public class Robot extends SampleRobot {
 	//private double shooterVelocity = 0;
 	private long lastSystemTimeCurrent = 0;
 	private long lastSystemTimeVelocity = 0;
+	private long lastSystemTimePID = 0;
 
 	//Averagable variables
 	private AverageCalculator leftMotorsCurrentDrawAvg = new AverageCalculator(200);
@@ -118,6 +121,10 @@ public class Robot extends SampleRobot {
 	//private AverageCalculator shooterVelocityAvg = new AverageCalculator(100);
 	private final int ENCODER_RATIO = 1;
 
+	//PID Loops
+	private PID turnLeftPID = new PID(0.001, 0.001, 0.001, 0.01);
+	private PID turnRightPID = new PID(0.001, 0.001, 0.001, 0.01);
+	
 	public Robot() {
 
 		//For all that is good in this world, DO NOT touch or breathe on these
@@ -143,8 +150,8 @@ public class Robot extends SampleRobot {
 		auxMotor = new Victor(0);
 
 		//Setup joysticks
-		leftStick = new Joystick(0);
-		rightStick = new Joystick(1);
+		//leftStick = new Joystick(0);
+		//rightStick = new Joystick(1);
 		arcadeStick = new Joystick(2);
 
 		//Setup PDP
@@ -193,10 +200,10 @@ public class Robot extends SampleRobot {
 			climberSpeed = Math.min(SmartDashboard.getNumber("DB/Slider 1", 0.75), 1);
 
 			//Check if we need to reverse the direction of the robot
-			if (rightStick.getRawButton(2) || leftStick.getRawButton(2) || arcadeStick.getRawButton(2)) {
+			if (arcadeStick.getRawButton(2)) {
 				//Check we arn't moving
 				if (previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
-					button2Pressed = true; //Look into weather or not this line is required
+					button2Pressed = true; //Look into whether or not this line is required
 					//Check if robot is actually ready to change direction
 					if (button2Pressed && ready2Change) {
 						direction *= -1;
@@ -320,39 +327,63 @@ public class Robot extends SampleRobot {
 			//Apply speed limit
 			leftSpeed *= speedMultiplier;
 			rightSpeed *= speedMultiplier;
-			
-    		System.out.println("*LENC : " + Double.toString(motor3.getEncPosition()));
-        	System.out.println("*RENC : " + Double.toString(-motor4.getEncPosition()));
         	
         	if (arcadeStick.getRawButton(6)) {
-        		turnAngle = (SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0)); //*72
+        		turnAngle = SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0);
         		//Ticks per metre: 12557
         		
-        		System.out.println("OAngle: " + Double.toString(turnAngle));
-        		if (turnAngle != 0) {
+        		/*if (turnAngle != 0) {
         			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
-        		}
-        		System.out.println("BAngle: " + Double.toString(turnAngle));
-        		turnAngle *= 12557;
-        		System.out.println("AAngle: " + Double.toString(turnAngle));
+        		}*/
         		
-        		if (motor3.getEncPosition() < turnAngle) { //146
-        			leftSpeed = 0.15;
+        		turnAngle = -arcadeStick.getRawAxis(2) * 2;
+        		turnAngle *= 12557;
+        		//turnAngle = 2 * 12557;
+        		
+        		this.turnLeftPID.setTarget(turnAngle);
+        		this.turnRightPID.setTarget(turnAngle);
+        		
+        		leftSpeed = this.turnLeftPID.calculate(this.motor3.getEncPosition());// /12557
+        		rightSpeed = this.turnRightPID.calculate(-this.motor4.getEncPosition());
+        		
+        		if (lastSystemTimePID+500 < System.currentTimeMillis()) {
+        			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));
+        			//System.out.println("RENC : " + Double.toString(PID.floor(-motor4.getEncPosition())));// / 12557)));
+        			System.out.println("Angle: " + Double.toString(turnAngle));
+        			System.out.println("Left : " + Double.toString(leftSpeed));
+        			//System.out.println("Right: " + Double.toString(rightSpeed));
+        			this.turnLeftPID.debug();
+        			System.out.println("");
+        			lastSystemTimePID = System.currentTimeMillis();
+        		}
+        		
+        		leftSpeed = Math.min(leftSpeed, 1);
+        		leftSpeed = Math.max(leftSpeed, -1);
+        		rightSpeed = Math.min(rightSpeed, 1);
+        		rightSpeed = Math.max(rightSpeed, -1);
+        		
+        		leftSpeed *= 0.75;
+        		rightSpeed *= 0.75;
+        		
+        		/*
+        		if (motor3.getEncPosition() < turnAngle) {
+        			leftSpeed = 0.35;
         			System.out.println("L+");
         		}
         		else if (motor3.getEncPosition() > turnAngle){
-        			leftSpeed = -0.15;
+        			leftSpeed = -0.35;
         			System.out.println("L-");
         		}
         		
-        		if (-motor4.getEncPosition() < -turnAngle) { //146
-        			rightSpeed = 0.15;
+        		if (-motor4.getEncPosition() < -turnAngle) {
+        			rightSpeed = 0.35;
         			System.out.println("R+");
         		}
         		else if (-motor4.getEncPosition() > -turnAngle){
-        			rightSpeed = -0.15;
+        			rightSpeed = -0.35;
         			System.out.println("R-");
         		}
+        		*/
         	}
 
 			/*
@@ -373,6 +404,8 @@ public class Robot extends SampleRobot {
         	if (arcadeStick.getRawButton(5)) {
         		motor3.setEncPosition(0);
         		motor4.setEncPosition(0);
+        		turnLeftPID.init();
+        		turnRightPID.init();
         	}
         	
 			//Code to control the Aux Motor, this is currently the climber
@@ -417,7 +450,7 @@ public class Robot extends SampleRobot {
 				this.lastSystemTimeVelocity = System.currentTimeMillis();
 			}
 
-			//Print telemetary/debug information to the Smart Dashboard
+			//Print telemetry/debug information to the Smart Dashboard
 			SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(direction));
 			SmartDashboard.putString("DB/String 5", DriverStation.getInstance().getAlliance() + " " + Integer.toString(DriverStation.getInstance().getLocation()));
 			SmartDashboard.putString("DB/String 2", "LCurrent: " + Double.toString(leftCurrent) + "A");
