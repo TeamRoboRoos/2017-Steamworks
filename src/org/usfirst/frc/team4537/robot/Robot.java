@@ -1,23 +1,27 @@
 package org.usfirst.frc.team4537.robot;
 
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 
 import com.ctre.CANTalon;
 
-import edu.wpi.cscore.VideoSource;
+import edu.wpi.first.wpilibj.ADXL345_SPI;
+import edu.wpi.first.wpilibj.ADXL362;
+import edu.wpi.first.wpilibj.ADXL362.AllAxes;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GyroBase;
 
 import java.lang.Math;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -40,10 +44,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends SampleRobot {
 
-	//Joystick leftStick;
-	//Joystick rightStick;
 	Joystick arcadeStick;
 	PowerDistributionPanel pdp;
+	AnalogInput pressureSensor;
+	ADXRS450_Gyro gyroscope;
+	ADXL362 accelerometer;
+	ADXL362.AllAxes accelerometerAll;
+	Accelerometer accRio;
+	
 
 	//These shouldn't need to be changed
 	private final int MOTOR_1 = 1;
@@ -104,6 +112,7 @@ public class Robot extends SampleRobot {
 	private double rightCurrent = 0;
 	private double climberCurrent = 0;
 	private double turnAngle = 0;
+	private double pressure = 0;
 	
 	private int loopIterations = 0;
 	private long systemTime = 0;
@@ -118,12 +127,14 @@ public class Robot extends SampleRobot {
 	private AverageCalculator rightMotorsCurrentDrawAvg = new AverageCalculator(200);
 	private AverageCalculator climberMotorCurrentDrawAvg = new AverageCalculator(200);
 	private AverageCalculator robotVelocityAvg = new AverageCalculator(100);
+	private AverageCalculator pressureAvg = new AverageCalculator(100);
 	//private AverageCalculator shooterVelocityAvg = new AverageCalculator(100);
 	private final int ENCODER_RATIO = 1;
 
 	//PID Loops
 	private PID turnLeftPID = new PID(0.001, 0.001, 0.001, 0.01);
 	private PID turnRightPID = new PID(0.001, 0.001, 0.001, 0.01);
+	//private PID drive = new PID(0.001, 0.001, 0.001, 0.01);
 	
 	public Robot() {
 
@@ -156,6 +167,10 @@ public class Robot extends SampleRobot {
 
 		//Setup PDP
 		pdp = new PowerDistributionPanel();
+		pressureSensor = new AnalogInput(1);
+		gyroscope = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+		accelerometer = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k8G);
+		accRio = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 	}
 
 	@Override
@@ -167,6 +182,8 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putBoolean("DB/Button 0", accCode);
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
+		//Initialize gyroscope
+		//gyroscope.calibrate();
 	}
 
 	/**
@@ -346,7 +363,7 @@ public class Robot extends SampleRobot {
         		leftSpeed = this.turnLeftPID.calculate(this.motor3.getEncPosition());// /12557
         		rightSpeed = this.turnRightPID.calculate(-this.motor4.getEncPosition());
         		
-        		if (lastSystemTimePID+500 < System.currentTimeMillis()) {
+        		/*if (lastSystemTimePID+500 < System.currentTimeMillis()) {
         			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));
         			//System.out.println("RENC : " + Double.toString(PID.floor(-motor4.getEncPosition())));// / 12557)));
         			System.out.println("Angle: " + Double.toString(turnAngle));
@@ -355,7 +372,7 @@ public class Robot extends SampleRobot {
         			this.turnLeftPID.debug();
         			System.out.println("");
         			lastSystemTimePID = System.currentTimeMillis();
-        		}
+        		}*/
         		
         		leftSpeed = Math.min(leftSpeed, 1);
         		leftSpeed = Math.max(leftSpeed, -1);
@@ -424,22 +441,26 @@ public class Robot extends SampleRobot {
 				auxMotor.set(0);
 			}
 
-			//Calculate robot telemetary data
+			//Calculate robot telemetry data
 			//Robot current monitors
 			this.leftMotorsCurrentDrawAvg.addValue(pdp.getCurrent(0) + pdp.getCurrent(1) + pdp.getCurrent(2));
 			this.rightMotorsCurrentDrawAvg.addValue(pdp.getCurrent(13) + pdp.getCurrent(14) + pdp.getCurrent(15));
 			this.climberMotorCurrentDrawAvg.addValue(pdp.getCurrent(12));
 			//Robot speed monitors
 			this.robotVelocityAvg.addValue((this.motor3.getEncPosition() + this.motor4.getEncPosition() /2) * ENCODER_RATIO);
-
+			//Pressure
+			this.pressureAvg.addValue(this.pressureSensor.getValue());
+			
 			//Update current draw over last 500ms
 			if (this.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {
 				this.leftCurrent = this.leftMotorsCurrentDrawAvg.getAverage();
 				this.rightCurrent = this.rightMotorsCurrentDrawAvg.getAverage();
 				this.climberCurrent = this.climberMotorCurrentDrawAvg.getAverage();
+				this.pressure = this.pressureAvg.getAverage();
 				this.leftMotorsCurrentDrawAvg.reset();
 				this.rightMotorsCurrentDrawAvg.reset();
 				this.climberMotorCurrentDrawAvg.reset();
+				this.pressureAvg.reset();
 				this.lastSystemTimeCurrent = System.currentTimeMillis();
 			}
 
@@ -450,7 +471,28 @@ public class Robot extends SampleRobot {
 				this.lastSystemTimeVelocity = System.currentTimeMillis();
 			}
 
-			//Print telemetry/debug information to the Smart Dashboard
+			//Print telemetry/debug information to the Smart Dashboard/Console
+			System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
+			
+			//System.out.print("Gyro A: " + Double.toString(gyroscope.getAngle()));
+			//System.out.println(" Gyro R: " + Double.toString(gyroscope.getRate()));
+			
+			//System.out.println(Double.toString(accelerometer.getZ()));
+			//System.out.println(accelerometer);
+			
+			//System.out.println("AccR: " + Double.toString(Math.sqrt(Math.pow(accRio.getX(), 2) + Math.pow(accRio.getY(), 2) + Math.pow(accRio.getZ(), 2))));
+			
+			/*this.accelerometerAll = this.accelerometer.getAccelerations();
+			if (this.accelerometerAll != null) {
+				System.out.print("Acce X: " + Double.toString(accelerometerAll.XAxis));
+				System.out.print(" Acce Y: " + Double.toString(accelerometerAll.YAxis));
+				System.out.println(" Acce Z: " + Double.toString(accelerometerAll.ZAxis));
+			}
+			else {
+				System.out.println("Can't Read Acc.");
+			}
+			*/
+			
 			SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(direction));
 			SmartDashboard.putString("DB/String 5", DriverStation.getInstance().getAlliance() + " " + Integer.toString(DriverStation.getInstance().getLocation()));
 			SmartDashboard.putString("DB/String 2", "LCurrent: " + Double.toString(leftCurrent) + "A");
