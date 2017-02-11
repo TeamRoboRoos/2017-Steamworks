@@ -91,6 +91,7 @@ public class Robot extends SampleRobot {
 	private double maxMoveAcceleration = 0.01;
 	private double maxMoveDeceleration = 0.05;
 	private double maxRotateAcceleration = 0.05;
+	private double currentMV = 0;
 	//private double maxRotateDeceleration = 0.05; //Currently isn't used
 
 	//Direction change variables
@@ -134,7 +135,7 @@ public class Robot extends SampleRobot {
 	//PID Loops
 	private PID turnLeftPID = new PID(0.001, 0.001, 0.001, 0.01);
 	private PID turnRightPID = new PID(0.001, 0.001, 0.001, 0.01);
-	//private PID drive = new PID(0.001, 0.001, 0.001, 0.01);
+	private PID drivePID = new PID(0.1, 1, 1, 0.1);
 	
 	public Robot() {
 
@@ -274,32 +275,41 @@ public class Robot extends SampleRobot {
 				moveValue *= 0.5;
 				rotateValue *= 0.5;
 			}
-
-			//Check acceleraton limitation
-			//Remove sign to avoid confusion between forward and backwards as opposed to speeding up and slowing down
+				
 			moveValue = Math.abs(moveValue);
 			rotateValue = Math.abs(rotateValue);
 
-			//Check if move speed is increasing
-			if (moveValue > previousMoveValue + maxMoveAcceleration) {
-				moveValue = previousMoveValue + maxMoveAcceleration;
-			}
-			//Check if move speed is decreasing
-			if (moveValue < previousMoveValue - maxMoveDeceleration) {
-				moveValue = previousMoveValue - maxMoveDeceleration;
-			}
-			//Check if rotate speed is decreasing
-			if (rotateValue > previousRotateValue + maxRotateAcceleration) {
-				rotateValue = previousRotateValue + maxRotateAcceleration;
-			}
+			if (accCode) {
+				//Check acceleraton limitation
+				//Remove sign to avoid confusion between forward and backwards as opposed to speeding up and slowing down
 
-			//Store previous motion inputs for next iteration
-			previousMoveValue = moveValue;
-			previousRotateValue = rotateValue;
+				//Check if move speed is increasing
+				if (moveValue > previousMoveValue + maxMoveAcceleration) {
+					moveValue = previousMoveValue + maxMoveAcceleration;
+				}
+				//Check if move speed is decreasing
+				if (moveValue < previousMoveValue - maxMoveDeceleration) {
+					moveValue = previousMoveValue - maxMoveDeceleration;
+				}
+				//Check if rotate speed is decreasing
+				if (rotateValue > previousRotateValue + maxRotateAcceleration) {
+					rotateValue = previousRotateValue + maxRotateAcceleration;
+				}
+
+				//Store previous motion inputs for next iteration
+				previousMoveValue = moveValue;
+				previousRotateValue = rotateValue;
+			}
 			//Reapply sign
 			moveValue *= moveSign;
 			rotateValue *= rotateSign;
 
+			if (!accCode){
+				drivePID.setTarget(moveValue);
+				moveValue = drivePID.calculate(currentMV);
+				currentMV = moveValue;
+			}
+			
 			//Mathy arcadey stuffy
 			/*
 			 * This block of code shouldn't really need to be changed
@@ -421,8 +431,10 @@ public class Robot extends SampleRobot {
         	if (arcadeStick.getRawButton(5)) {
         		motor3.setEncPosition(0);
         		motor4.setEncPosition(0);
+        		currentMV = 0;
         		turnLeftPID.init();
         		turnRightPID.init();
+        		drivePID.init();
         	}
         	
 			//Code to control the Aux Motor, this is currently the climber
@@ -472,7 +484,7 @@ public class Robot extends SampleRobot {
 			}
 
 			//Print telemetry/debug information to the Smart Dashboard/Console
-			System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
+			//System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
 			
 			//System.out.print("Gyro A: " + Double.toString(gyroscope.getAngle()));
 			//System.out.println(" Gyro R: " + Double.toString(gyroscope.getRate()));
