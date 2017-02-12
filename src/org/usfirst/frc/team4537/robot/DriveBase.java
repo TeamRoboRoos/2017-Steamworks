@@ -4,12 +4,10 @@ import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,6 +34,9 @@ public class DriveBase {
 	CANTalon motor4;
 	CANTalon motor5;
 	CANTalon motor6;
+	
+	CANTalon leftEncoder;
+	CANTalon rightEncoder;
 
 	//Arcade definitions
 	public double leftSpeed = 0;
@@ -47,7 +48,7 @@ public class DriveBase {
 	private boolean preserveSign = false;
 	private double mDeadzone = 0.01;
 	private double rDeadzone = 0.01;
-	public int direction = -1;
+	public int direction = -1; //-1 is true, 1 is false
 	private double powerIndex = 2;
 	//Speed limiter
 	private double speedMultiplier = 0.5;
@@ -64,8 +65,7 @@ public class DriveBase {
 	//Direction change variables
 	private double previousLeftSpeed = 0;
 	private double previousRightSpeed = 0;
-	private boolean button2Pressed = false;
-	private boolean ready2Change = false;
+	public boolean button2Pressed = false;
 	public boolean accCode = true;
 
 	////System telemetry
@@ -78,9 +78,6 @@ public class DriveBase {
 	public double climberCurrent = 0;
 	private double turnAngle = 0;
 
-	
-	private int loopIterations = 0;
-	private long systemTime = 0;
 	public double robotVelocity = 0;
 	//private double shooterVelocity = 0;
 	public long lastSystemTimeCurrent = 0;
@@ -90,7 +87,8 @@ public class DriveBase {
 
 
 	//private AverageCalculator shooterVelocityAvg = new AverageCalculator(100);
-	public final int ENCODER_RATIO = 1;
+	public final int ENCODER_RATIO = 12557;
+	//Ticks per metre: 12557
 
 	//PID Loops
 	private PID turnLeftPID = new PID(0.001, 0.001, 0.001, 0.01);
@@ -124,6 +122,9 @@ public class DriveBase {
 		gyroscope = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		accelerometer = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k8G);
 		accRio = new BuiltInAccelerometer(Accelerometer.Range.k4G);
+		
+		leftEncoder = motor3;
+		rightEncoder = motor4;
 	}
 	
 	public void drive() {
@@ -235,24 +236,18 @@ public class DriveBase {
 		 * It should under no circumstances need to be changed
 		 * It can cause the motors to fight and possibly break the gearbox
 		 */
-		System.out.println("LS: " + leftSpeed);
+		//System.out.println("LS: " + leftSpeed);
 		//Left side
 		motor1.set(leftSpeed);
 		motor2.set(leftSpeed);
 		motor3.set(leftSpeed);
 
-		System.out.println("RS: " + rightSpeed);
+		//System.out.println("RS: " + rightSpeed);
 		//Right Side
 		motor4.set(rightSpeed);
 		motor5.set(rightSpeed);
 		motor6.set(rightSpeed);
     	
-
-		//Pressure
-
-		
-
-		
 		randomGyroAndAccStuff();
 		randomEncoderStuff();
 
@@ -283,30 +278,31 @@ public class DriveBase {
 	}
 	
 	public void randomEncoderStuff() {
-		/*
-		if (motor3.getEncPosition() < turnAngle) {
+	/*	
+		if (leftEncoder.getEncPosition() < turnAngle) {
 			leftSpeed = 0.35;
 			System.out.println("L+");
 		}
-		else if (motor3.getEncPosition() > turnAngle){
+		else if (leftEncoder.getEncPosition() > turnAngle){
 			leftSpeed = -0.35;
 			System.out.println("L-");
 		}
 		
-		if (-motor4.getEncPosition() < -turnAngle) {
+		if (-rightEncoder.getEncPosition() < -turnAngle) {
 			rightSpeed = 0.35;
 			System.out.println("R+");
 		}
-		else if (-motor4.getEncPosition() > -turnAngle){
+		else if (-rightEncoder.getEncPosition() > -turnAngle){
 			rightSpeed = -0.35;
 			System.out.println("R-");
 		}
-		*/
+		
+*/
 	}
 	
 	public void resetDrivePID() {
-		motor3.setEncPosition(0);
-		motor4.setEncPosition(0);
+		leftEncoder.setEncPosition(0);
+		rightEncoder.setEncPosition(0);
 		currentMV = 0;
 		turnLeftPID.init();
 		turnRightPID.init();
@@ -316,15 +312,9 @@ public class DriveBase {
 	public void changeDirection() {
 		//Check we aren't moving
 		if (previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
-			button2Pressed = true; //Look into whether or not this line is required
-			//Check if robot is actually ready to change direction
-			if (button2Pressed && ready2Change) {
+			if (!button2Pressed) {
 				direction *= -1;
-				button2Pressed = false;
-				ready2Change = false;
-			}
-			else {
-				ready2Change = true;
+				button2Pressed = true;
 			}
 		}
 	}
@@ -336,7 +326,7 @@ public class DriveBase {
 	
 	public void driveStraightPID() {
 		turnAngle = SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0);
-		//Ticks per metre: 12557
+		
 		
 		/*if (turnAngle != 0) {
 			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
@@ -349,8 +339,8 @@ public class DriveBase {
 		this.turnLeftPID.setTarget(turnAngle);
 		this.turnRightPID.setTarget(turnAngle);
 		
-		leftSpeed = this.turnLeftPID.calculate(this.motor3.getEncPosition());// /12557
-		rightSpeed = this.turnRightPID.calculate(-this.motor4.getEncPosition());
+		leftSpeed = this.turnLeftPID.calculate(this.leftEncoder.getEncPosition());// /12557
+		rightSpeed = this.turnRightPID.calculate(-this.rightEncoder.getEncPosition());
 		
 		/*if (lastSystemTimePID+500 < System.currentTimeMillis()) {
 			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));

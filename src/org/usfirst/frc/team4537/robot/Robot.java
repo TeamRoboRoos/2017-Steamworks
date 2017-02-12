@@ -2,63 +2,36 @@ package org.usfirst.frc.team4537.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 
-import com.ctre.CANTalon;
-
-import edu.wpi.first.wpilibj.ADXL345_SPI;
-import edu.wpi.first.wpilibj.ADXL362;
-import edu.wpi.first.wpilibj.ADXL362.AllAxes;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 
-import java.lang.Math;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-/**
- * This is a demo program showing the use of the RobotDrive class. The
- * SampleRobot class is the base of a robot application that will automatically
- * call your Autonomous and OperatorControl methods at the right time as
- * controlled by the switches on the driver station or the field controls.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're
- * inexperienced, don't. Unless you know what you are doing, complex code will
- * be much more difficult under this system. Use IterativeRobot or Command-Based
- * instead if you're new.
- */
 public class Robot extends SampleRobot {
 
 	DriveBase driveBase;
 	Climber climber;
-	Gears gears;
+	Pneumatics newmatches;
 	
 	//Averagable variables
-	public AverageCalculator leftMotorsCurrentDrawAvg = new AverageCalculator(200);
-	public AverageCalculator rightMotorsCurrentDrawAvg = new AverageCalculator(200);
-	public AverageCalculator climberMotorCurrentDrawAvg = new AverageCalculator(200);
-	public AverageCalculator robotVelocityAvg = new AverageCalculator(100);
-	public AverageCalculator pressureAvg = new AverageCalculator(100);
+	private AverageCalculator leftMotorsCurrentDrawAvg;
+	private AverageCalculator rightMotorsCurrentDrawAvg;
+	private AverageCalculator climberMotorCurrentDrawAvg;
+	private AverageCalculator robotVelocityAvg;
+	private AverageCalculator pressureAvg;
 	
 	public Robot() {
 		driveBase = new DriveBase();
 		climber = new Climber();
-		gears = new Gears();
+		newmatches = new Pneumatics();
+		
+		leftMotorsCurrentDrawAvg = new AverageCalculator(200);
+		rightMotorsCurrentDrawAvg = new AverageCalculator(200);
+		climberMotorCurrentDrawAvg = new AverageCalculator(200);
+		robotVelocityAvg = new AverageCalculator(100);
+		pressureAvg = new AverageCalculator(100);
 	}
 
 	@Override
@@ -70,6 +43,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putBoolean("DB/Button 0", driveBase.accCode);
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
+		newmatches.startCompressor();
 		//Initialize gyroscope
 		//gyroscope.calibrate();
 	}
@@ -95,17 +69,19 @@ public class Robot extends SampleRobot {
 	public void operatorControl() {
 		while (isOperatorControl() && isEnabled()) {
 			
+			driveBase.drive();
+			
+			newmatches.debug();
+			
 			//Calculate robot telemetry data
 			//Robot current monitors
 			this.leftMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(0) + driveBase.pdp.getCurrent(1) + driveBase.pdp.getCurrent(2));
 			this.rightMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(13) + driveBase.pdp.getCurrent(14) + driveBase.pdp.getCurrent(15));
 			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
-			this.pressureAvg.addValue(gears.pressureSensor.getValue());
+			this.pressureAvg.addValue(newmatches.pressureSensor.getValue());
 			//Robot speed monitors
 			this.robotVelocityAvg.addValue((driveBase.motor3.getEncPosition() + driveBase.motor4.getEncPosition() /2) * driveBase.ENCODER_RATIO);
 			
-			driveBase.drive();
-
 			
 			if (driveBase.arcadeStick.getRawButton(1)) {
 				climber.climbUp();
@@ -122,26 +98,42 @@ public class Robot extends SampleRobot {
 			if (driveBase.arcadeStick.getRawButton(2)) {
 				driveBase.changeDirection();
 			}
-			
-	    	if (driveBase.arcadeStick.getRawButton(3)) {
-	    		driveBase.driveStraightPID();
-	    	}
+			else {
+				driveBase.button2Pressed = false;
+			}
 			
 	    	if (driveBase.arcadeStick.getRawButton(5)) {
-	    		driveBase.resetDrivePID();
+    			newmatches.toggleRamp();
+    		}
+	    	else {
+	    		newmatches.button5Pressed = false;
 	    	}
-	    	
+		
 			if (driveBase.arcadeStick.getRawButton(6)) {
+    			newmatches.toggleFlippers();
+    		}
+	    	else {
+	    		newmatches.button6Pressed = false;
+	    	}
+			
+	    	/*if (driveBase.arcadeStick.getRawButton(4)) {
+	    		driveBase.driveStraightPID();
+	    	}*/
+			
+	    	/*if (driveBase.arcadeStick.getRawButton(5)) {
+	    		driveBase.resetDrivePID();
+	    	}*/
+	    	
+			if (driveBase.arcadeStick.getRawButton(4)) {
 				driveBase.halfSpeed();
 			}
-
-	    	
+			
 			//Update current draw over last 500ms
 			if (driveBase.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {
 				driveBase.leftCurrent = leftMotorsCurrentDrawAvg.getAverage();
 				driveBase.rightCurrent = rightMotorsCurrentDrawAvg.getAverage();
 				driveBase.climberCurrent = climberMotorCurrentDrawAvg.getAverage();
-				gears.pressure = pressureAvg.getAverage();
+				newmatches.pressure = pressureAvg.getAverage();
 				leftMotorsCurrentDrawAvg.reset();
 				rightMotorsCurrentDrawAvg.reset();
 				climberMotorCurrentDrawAvg.reset();
