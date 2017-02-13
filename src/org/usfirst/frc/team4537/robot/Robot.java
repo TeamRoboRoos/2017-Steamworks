@@ -13,7 +13,7 @@ public class Robot extends SampleRobot {
 
 	DriveBase driveBase;
 	Climber climber;
-	Pneumatics newmatches;
+	Pneumatics pneumatics;
 	
 	//Averagable variables
 	private AverageCalculator leftMotorsCurrentDrawAvg;
@@ -25,7 +25,7 @@ public class Robot extends SampleRobot {
 	public Robot() {
 		driveBase = new DriveBase();
 		climber = new Climber();
-		newmatches = new Pneumatics();
+		pneumatics = new Pneumatics();
 		
 		leftMotorsCurrentDrawAvg = new AverageCalculator(200);
 		rightMotorsCurrentDrawAvg = new AverageCalculator(200);
@@ -43,7 +43,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putBoolean("DB/Button 0", driveBase.accCode);
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
-		newmatches.startCompressor();
+		pneumatics.startCompressor();
 		//Initialize gyroscope
 		//gyroscope.calibrate();
 	}
@@ -71,14 +71,14 @@ public class Robot extends SampleRobot {
 			
 			driveBase.drive();
 			
-			newmatches.debug();
+			pneumatics.debug();
 			
 			//Calculate robot telemetry data
 			//Robot current monitors
 			this.leftMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(0) + driveBase.pdp.getCurrent(1) + driveBase.pdp.getCurrent(2));
 			this.rightMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(13) + driveBase.pdp.getCurrent(14) + driveBase.pdp.getCurrent(15));
 			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
-			this.pressureAvg.addValue(newmatches.pressureSensor.getValue());
+			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
 			//Robot speed monitors
 			this.robotVelocityAvg.addValue((driveBase.motor3.getEncPosition() + driveBase.motor4.getEncPosition() /2) * driveBase.ENCODER_RATIO);
 			
@@ -103,17 +103,17 @@ public class Robot extends SampleRobot {
 			}
 			
 	    	if (driveBase.arcadeStick.getRawButton(5)) {
-    			newmatches.toggleRamp();
+    			pneumatics.toggleRamp();
     		}
 	    	else {
-	    		newmatches.button5Pressed = false;
+	    		pneumatics.button5Pressed = false;
 	    	}
 		
 			if (driveBase.arcadeStick.getRawButton(6)) {
-    			newmatches.toggleFlippers();
+    			pneumatics.toggleFlippers();
     		}
 	    	else {
-	    		newmatches.button6Pressed = false;
+	    		pneumatics.button6Pressed = false;
 	    	}
 			
 	    	/*if (driveBase.arcadeStick.getRawButton(4)) {
@@ -133,7 +133,7 @@ public class Robot extends SampleRobot {
 				driveBase.leftCurrent = leftMotorsCurrentDrawAvg.getAverage();
 				driveBase.rightCurrent = rightMotorsCurrentDrawAvg.getAverage();
 				driveBase.climberCurrent = climberMotorCurrentDrawAvg.getAverage();
-				newmatches.pressure = pressureAvg.getAverage();
+				pneumatics.pressure = pressureAvg.getAverage();
 				leftMotorsCurrentDrawAvg.reset();
 				rightMotorsCurrentDrawAvg.reset();
 				climberMotorCurrentDrawAvg.reset();

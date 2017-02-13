@@ -127,6 +127,114 @@ public class DriveBase {
 		rightEncoder = motor4;
 	}
 	
+	public void randomGyroAndAccStuff() {
+		//Print telemetry/debug information to the Smart Dashboard/Console
+		//System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
+		
+		//System.out.print("Gyro A: " + Double.toString(gyroscope.getAngle()));
+		//System.out.println(" Gyro R: " + Double.toString(gyroscope.getRate()));
+		
+		//System.out.println(Double.toString(accelerometer.getZ()));
+		//System.out.println(accelerometer);
+		
+		//System.out.println("AccR: " + Double.toString(Math.sqrt(Math.pow(accRio.getX(), 2) + Math.pow(accRio.getY(), 2) + Math.pow(accRio.getZ(), 2))));
+		
+		/*this.accelerometerAll = this.accelerometer.getAccelerations();
+		if (this.accelerometerAll != null) {
+			System.out.print("Acce X: " + Double.toString(accelerometerAll.XAxis));
+			System.out.print(" Acce Y: " + Double.toString(accelerometerAll.YAxis));
+			System.out.println(" Acce Z: " + Double.toString(accelerometerAll.ZAxis));
+		}
+		else {
+			System.out.println("Can't Read Acc.");
+		}
+		*/
+	}
+	
+	public void resetDrivePID() {
+		leftEncoder.setEncPosition(0);
+		rightEncoder.setEncPosition(0);
+		currentMV = 0;
+		turnLeftPID.init();
+		turnRightPID.init();
+		drivePID.init();
+	}
+	
+	public void changeDirection() {
+		//Check we aren't moving
+		if (previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
+			if (!button2Pressed) {
+				direction *= -1;
+				button2Pressed = true;
+			}
+		}
+	}
+	
+	public void halfSpeed() {
+		moveValue *= 0.5;
+		rotateValue *= 0.5;
+	}
+	
+	public void driveStraightPID() {
+		turnAngle = SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0);
+		
+		
+		/*if (turnAngle != 0) {
+			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
+		}*/
+		
+		turnAngle = -arcadeStick.getRawAxis(2) * 2;
+		turnAngle *= 12557;
+		//turnAngle = 2 * 12557;
+		
+		this.turnLeftPID.setTarget(turnAngle);
+		this.turnRightPID.setTarget(turnAngle);
+		
+		leftSpeed = this.turnLeftPID.calculate(this.leftEncoder.getEncPosition());// /12557
+		rightSpeed = this.turnRightPID.calculate(-this.rightEncoder.getEncPosition());
+		
+		/*if (lastSystemTimePID+500 < System.currentTimeMillis()) {
+			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));
+			//System.out.println("RENC : " + Double.toString(PID.floor(-motor4.getEncPosition())));// / 12557)));
+			System.out.println("Angle: " + Double.toString(turnAngle));
+			System.out.println("Left : " + Double.toString(leftSpeed));
+			//System.out.println("Right: " + Double.toString(rightSpeed));
+			this.turnLeftPID.debug();
+			System.out.println("");
+			lastSystemTimePID = System.currentTimeMillis();
+		}*/
+		
+		leftSpeed = Math.min(leftSpeed, 1);
+		leftSpeed = Math.max(leftSpeed, -1);
+		rightSpeed = Math.min(rightSpeed, 1);
+		rightSpeed = Math.max(rightSpeed, -1);
+		
+		leftSpeed *= 0.75;
+		rightSpeed *= 0.75;
+	}
+	
+	public void accCode() {
+		//Check acceleraton limitation
+		//Remove sign to avoid confusion between forward and backwards as opposed to speeding up and slowing down
+
+		//Check if move speed is increasing
+		if (moveValue > previousMoveValue + maxMoveAcceleration) {
+			moveValue = previousMoveValue + maxMoveAcceleration;
+		}
+		//Check if move speed is decreasing
+		if (moveValue < previousMoveValue - maxMoveDeceleration) {
+			moveValue = previousMoveValue - maxMoveDeceleration;
+		}
+		//Check if rotate speed is decreasing
+		if (rotateValue > previousRotateValue + maxRotateAcceleration) {
+			rotateValue = previousRotateValue + maxRotateAcceleration;
+		}
+
+		//Store previous motion inputs for next iteration
+		previousMoveValue = moveValue;
+		previousRotateValue = rotateValue;
+	}
+	
 	public void drive() {
 		arcadeStick = new Joystick(2);
 		
@@ -249,139 +357,6 @@ public class DriveBase {
 		motor6.set(rightSpeed);
     	
 		randomGyroAndAccStuff();
-		randomEncoderStuff();
 
 	}
-	
-	public void randomGyroAndAccStuff() {
-		//Print telemetry/debug information to the Smart Dashboard/Console
-		//System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
-		
-		//System.out.print("Gyro A: " + Double.toString(gyroscope.getAngle()));
-		//System.out.println(" Gyro R: " + Double.toString(gyroscope.getRate()));
-		
-		//System.out.println(Double.toString(accelerometer.getZ()));
-		//System.out.println(accelerometer);
-		
-		//System.out.println("AccR: " + Double.toString(Math.sqrt(Math.pow(accRio.getX(), 2) + Math.pow(accRio.getY(), 2) + Math.pow(accRio.getZ(), 2))));
-		
-		/*this.accelerometerAll = this.accelerometer.getAccelerations();
-		if (this.accelerometerAll != null) {
-			System.out.print("Acce X: " + Double.toString(accelerometerAll.XAxis));
-			System.out.print(" Acce Y: " + Double.toString(accelerometerAll.YAxis));
-			System.out.println(" Acce Z: " + Double.toString(accelerometerAll.ZAxis));
-		}
-		else {
-			System.out.println("Can't Read Acc.");
-		}
-		*/
-	}
-	
-	public void randomEncoderStuff() {
-	/*	
-		if (leftEncoder.getEncPosition() < turnAngle) {
-			leftSpeed = 0.35;
-			System.out.println("L+");
-		}
-		else if (leftEncoder.getEncPosition() > turnAngle){
-			leftSpeed = -0.35;
-			System.out.println("L-");
-		}
-		
-		if (-rightEncoder.getEncPosition() < -turnAngle) {
-			rightSpeed = 0.35;
-			System.out.println("R+");
-		}
-		else if (-rightEncoder.getEncPosition() > -turnAngle){
-			rightSpeed = -0.35;
-			System.out.println("R-");
-		}
-		
-*/
-	}
-	
-	public void resetDrivePID() {
-		leftEncoder.setEncPosition(0);
-		rightEncoder.setEncPosition(0);
-		currentMV = 0;
-		turnLeftPID.init();
-		turnRightPID.init();
-		drivePID.init();
-	}
-	
-	public void changeDirection() {
-		//Check we aren't moving
-		if (previousLeftSpeed > -0.3 && previousLeftSpeed < 0.3 && previousRightSpeed > -0.3 && previousRightSpeed < 0.3) {
-			if (!button2Pressed) {
-				direction *= -1;
-				button2Pressed = true;
-			}
-		}
-	}
-	
-	public void halfSpeed() {
-		moveValue *= 0.5;
-		rotateValue *= 0.5;
-	}
-	
-	public void driveStraightPID() {
-		turnAngle = SmartDashboard.getNumber("DB/Slider 2", 0) - SmartDashboard.getNumber("DB/Slider 3", 0);
-		
-		
-		/*if (turnAngle != 0) {
-			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
-		}*/
-		
-		turnAngle = -arcadeStick.getRawAxis(2) * 2;
-		turnAngle *= 12557;
-		//turnAngle = 2 * 12557;
-		
-		this.turnLeftPID.setTarget(turnAngle);
-		this.turnRightPID.setTarget(turnAngle);
-		
-		leftSpeed = this.turnLeftPID.calculate(this.leftEncoder.getEncPosition());// /12557
-		rightSpeed = this.turnRightPID.calculate(-this.rightEncoder.getEncPosition());
-		
-		/*if (lastSystemTimePID+500 < System.currentTimeMillis()) {
-			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));
-			//System.out.println("RENC : " + Double.toString(PID.floor(-motor4.getEncPosition())));// / 12557)));
-			System.out.println("Angle: " + Double.toString(turnAngle));
-			System.out.println("Left : " + Double.toString(leftSpeed));
-			//System.out.println("Right: " + Double.toString(rightSpeed));
-			this.turnLeftPID.debug();
-			System.out.println("");
-			lastSystemTimePID = System.currentTimeMillis();
-		}*/
-		
-		leftSpeed = Math.min(leftSpeed, 1);
-		leftSpeed = Math.max(leftSpeed, -1);
-		rightSpeed = Math.min(rightSpeed, 1);
-		rightSpeed = Math.max(rightSpeed, -1);
-		
-		leftSpeed *= 0.75;
-		rightSpeed *= 0.75;
-	}
-	
-	public void accCode() {
-		//Check acceleraton limitation
-		//Remove sign to avoid confusion between forward and backwards as opposed to speeding up and slowing down
-
-		//Check if move speed is increasing
-		if (moveValue > previousMoveValue + maxMoveAcceleration) {
-			moveValue = previousMoveValue + maxMoveAcceleration;
-		}
-		//Check if move speed is decreasing
-		if (moveValue < previousMoveValue - maxMoveDeceleration) {
-			moveValue = previousMoveValue - maxMoveDeceleration;
-		}
-		//Check if rotate speed is decreasing
-		if (rotateValue > previousRotateValue + maxRotateAcceleration) {
-			rotateValue = previousRotateValue + maxRotateAcceleration;
-		}
-
-		//Store previous motion inputs for next iteration
-		previousMoveValue = moveValue;
-		previousRotateValue = rotateValue;
-	}
-	
 }
