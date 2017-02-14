@@ -13,6 +13,7 @@ public class Robot extends SampleRobot {
 
 	DriveBase driveBase;
 	Climber climber;
+	BallSystem ballSystem;
 	Pneumatics pneumatics;
 	
 	//Averagable variables
@@ -25,6 +26,7 @@ public class Robot extends SampleRobot {
 	public Robot() {
 		driveBase = new DriveBase();
 		climber = new Climber();
+		ballSystem = new BallSystem();
 		pneumatics = new Pneumatics();
 		
 		leftMotorsCurrentDrawAvg = new AverageCalculator(200);
@@ -41,8 +43,10 @@ public class Robot extends SampleRobot {
 		CameraServer.getInstance().startAutomaticCapture("Loader", 1);
 		//Insert default values into DB variables
 		SmartDashboard.putBoolean("DB/Button 0", driveBase.accCode);
+		SmartDashboard.putBoolean("DB/Button 1", false);
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
+		//Start compressor
 		pneumatics.startCompressor();
 		//Initialize gyroscope
 		//gyroscope.calibrate();
@@ -80,7 +84,7 @@ public class Robot extends SampleRobot {
 			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
 			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
 			//Robot speed monitors
-			this.robotVelocityAvg.addValue((driveBase.motor3.getEncPosition() + driveBase.motor4.getEncPosition() /2) * driveBase.ENCODER_RATIO);
+			this.robotVelocityAvg.addValue((driveBase.dlMotor3.getEncPosition() + driveBase.drMotor4.getEncPosition() /2) * driveBase.ENCODER_RATIO);
 			
 			
 			if (driveBase.arcadeStick.getRawButton(1)) {
@@ -102,31 +106,32 @@ public class Robot extends SampleRobot {
 				driveBase.button2Pressed = false;
 			}
 			
-	    	if (driveBase.arcadeStick.getRawButton(5)) {
+	    	if (SmartDashboard.getBoolean("DB/Button 1", false)) {
     			pneumatics.toggleRamp();
+    			SmartDashboard.putBoolean("DB/Button 1", false);
     		}
 	    	else {
 	    		pneumatics.button5Pressed = false;
 	    	}
-		
+	    	
+			if (driveBase.arcadeStick.getRawButton(4)) {
+				driveBase.halfSpeed();
+			}
+			
+			if (driveBase.arcadeStick.getRawButton(5)) {
+				ballSystem.ballIn();
+			}
+			//Set to 0 by default
+			else {
+				ballSystem.ballDefault();
+			}
+			
 			if (driveBase.arcadeStick.getRawButton(6)) {
     			pneumatics.toggleFlippers();
     		}
 	    	else {
 	    		pneumatics.button6Pressed = false;
 	    	}
-			
-	    	/*if (driveBase.arcadeStick.getRawButton(4)) {
-	    		driveBase.driveStraightPID();
-	    	}*/
-			
-	    	/*if (driveBase.arcadeStick.getRawButton(5)) {
-	    		driveBase.resetDrivePID();
-	    	}*/
-	    	
-			if (driveBase.arcadeStick.getRawButton(4)) {
-				driveBase.halfSpeed();
-			}
 			
 			//Update current draw over last 500ms
 			if (driveBase.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {

@@ -20,20 +20,26 @@ public class DriveBase {
 	Accelerometer accRio;
 	
 	//These shouldn't need to be changed
-	private final int MOTOR_1 = 1;
-	private final int MOTOR_2 = 2;
-	private final int MOTOR_3 = 3;
-	private final int MOTOR_4 = 4;
-	private final int MOTOR_5 = 5;
-	private final int MOTOR_6 = 6;
+	private final int MOTOR_DL_1 = 1;
+	private final int MOTOR_DL_2 = 2;
+	private final int MOTOR_DL_3 = 3;
+	private final int MOTOR_DR_4 = 4;
+	private final int MOTOR_DR_5 = 5;
+	private final int MOTOR_DR_6 = 6;
+	private final int BALL_MOTOR_7 = 7;
+	private final int BALL_MOTOR_8 = 8;
+	private final int CLIMB_MOTOR_9 = 9;
 
 	//These shouldn't need to be changed
-	CANTalon motor1;
-	CANTalon motor2;
-	CANTalon motor3;
-	CANTalon motor4;
-	CANTalon motor5;
-	CANTalon motor6;
+	CANTalon dlMotor1;
+	CANTalon dlMotor2;
+	CANTalon dlMotor3;
+	CANTalon drMotor4;
+	CANTalon drMotor5;
+	CANTalon drMotor6;
+	CANTalon ballMotor7;
+	CANTalon ballMotor8;
+	CANTalon climbMotor9;
 	
 	CANTalon leftEncoder;
 	CANTalon rightEncoder;
@@ -98,33 +104,43 @@ public class DriveBase {
 	public DriveBase() {
 		//For all that is good in this world, DO NOT touch or breathe on these
 		//Left motors
-		motor1 = new CANTalon(MOTOR_1); //frontLeftMotor
-		motor1.setExpiration(0.1);
-		motor1.setInverted(true);
-		motor2 = new CANTalon(MOTOR_2); //middleLeftMotor
-		motor2.setExpiration(0.1);
-		motor2.setInverted(true);
-		motor3 = new CANTalon(MOTOR_3); //rearLeftMotor
-		motor3.setExpiration(0.1);
-		motor3.setInverted(true);
+		dlMotor1 = new CANTalon(MOTOR_DL_1); //frontLeftMotor
+		dlMotor1.setExpiration(0.1);
+		dlMotor1.setInverted(true);
+		dlMotor2 = new CANTalon(MOTOR_DL_2); //middleLeftMotor
+		dlMotor2.setExpiration(0.1);
+		dlMotor2.setInverted(true);
+		dlMotor3 = new CANTalon(MOTOR_DL_3); //rearLeftMotor
+		dlMotor3.setExpiration(0.1);
+		dlMotor3.setInverted(true);
 
 		//Right motors
-		motor4 = new CANTalon(MOTOR_4); //frontRightMotor
-		motor4.setExpiration(0.1);
-		motor5 = new CANTalon(MOTOR_5); //middleRightMotor
-		motor5.setExpiration(0.1);
-		motor6 = new CANTalon(MOTOR_6); //rearRightMotor
-		motor6.setExpiration(0.1);
+		drMotor4 = new CANTalon(MOTOR_DR_4); //frontRightMotor
+		drMotor4.setExpiration(0.1);
+		drMotor5 = new CANTalon(MOTOR_DR_5); //middleRightMotor
+		drMotor5.setExpiration(0.1);
+		drMotor6 = new CANTalon(MOTOR_DR_6); //rearRightMotor
+		drMotor6.setExpiration(0.1);
+		
+		//Ball grabber motors and climber motor
+		//FIXME A ball motor may need to be inverted
+		ballMotor7 = new CANTalon(BALL_MOTOR_7);
+		ballMotor7.setExpiration(0.1);
+		ballMotor8 = new CANTalon(BALL_MOTOR_8);
+		ballMotor8.setExpiration(0.1);
+		climbMotor9 = new CANTalon(CLIMB_MOTOR_9);
+		climbMotor9.setExpiration(0.1);
 
 		//Setup PDP
 		pdp = new PowerDistributionPanel();
 
+		//Setup gyro and accelerometers
 		gyroscope = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		accelerometer = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k8G);
 		accRio = new BuiltInAccelerometer(Accelerometer.Range.k4G);
 		
-		leftEncoder = motor3;
-		rightEncoder = motor4;
+		leftEncoder = dlMotor3;
+		rightEncoder = drMotor4;
 	}
 	
 	public void randomGyroAndAccStuff() {
@@ -346,15 +362,15 @@ public class DriveBase {
 		 */
 		//System.out.println("LS: " + leftSpeed);
 		//Left side
-		motor1.set(leftSpeed);
-		motor2.set(leftSpeed);
-		motor3.set(leftSpeed);
+		dlMotor1.set(leftSpeed);
+		dlMotor2.set(leftSpeed);
+		dlMotor3.set(leftSpeed);
 
 		//System.out.println("RS: " + rightSpeed);
 		//Right Side
-		motor4.set(rightSpeed);
-		motor5.set(rightSpeed);
-		motor6.set(rightSpeed);
+		drMotor4.set(rightSpeed);
+		drMotor5.set(rightSpeed);
+		drMotor6.set(rightSpeed);
     	
 		randomGyroAndAccStuff();
 

@@ -24,11 +24,11 @@ public class Pneumatics {
 	}
 	
 	public void startCompressor() {
-		compressor.setClosedLoopControl(true);
+		compressor.start();
 	}
 	
 	public void stopCompressor() {
-		compressor.setClosedLoopControl(false);
+		compressor.stop();
 	}
 	
 	public void toggleRamp() {
@@ -46,7 +46,6 @@ public class Pneumatics {
 	}
 	
 	public void debug() {
-		System.out.println(compressor.getClosedLoopControl());
 		SmartDashboard.putBoolean("DB/LED 1", ramp.get());
 		SmartDashboard.putBoolean("DB/LED 2", flippers.get());
 	}

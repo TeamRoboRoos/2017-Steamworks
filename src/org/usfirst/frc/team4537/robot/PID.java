@@ -51,10 +51,6 @@ public class PID {
 		this.integral = 0;
 		this.derivative = 0;
 	}
-	
-	public static double floor(double value) {
-		return Math.floor(value * 100)/100;
-	}
 
 	/**
 	 * Sets target value for control loop
@@ -85,13 +81,13 @@ public class PID {
 	}
 	
 	public void debug() {
-		System.out.println("T    : " + Double.toString(floor(this.target)));
-		//System.out.println("V    : " + Double.toString(floor(value)));
-		System.out.println("E    : " + Double.toString(floor(this.error)));
-		System.out.println("P    : " + Double.toString(floor(this.proportional)));
-		System.out.println("I    : " + Double.toString(floor(this.integral)));
-		System.out.println("D    : " + Double.toString(floor(this.derivative)));
-		System.out.println("O    : " + Double.toString(floor(this.output)));
+		System.out.println("T    : " + Double.toString(CustomFunctions.floor(this.target, 2)));
+		//System.out.println("V    : " + Double.toString(RandomCrap.floor(value, 2)));
+		System.out.println("E    : " + Double.toString(CustomFunctions.floor(this.error)));
+		System.out.println("P    : " + Double.toString(CustomFunctions.floor(this.proportional, 2)));
+		System.out.println("I    : " + Double.toString(CustomFunctions.floor(this.integral, 2)));
+		System.out.println("D    : " + Double.toString(CustomFunctions.floor(this.derivative, 2)));
+		System.out.println("O    : " + Double.toString(CustomFunctions.floor(this.output, 2)));
 		
 	}
 }
