@@ -13,7 +13,7 @@ public class Pneumatics {
 	public double pressure = 0;
 	
 	private final int PCM_PORT = 10;
-	public boolean button5Pressed = false;
+	public boolean db1 = false;
 	public boolean button6Pressed = false;
 	
 	public Pneumatics() {
@@ -32,9 +32,9 @@ public class Pneumatics {
 	}
 	
 	public void toggleRamp() {
-		if (!button5Pressed) {
+		if (!db1) {
 			ramp.set(!ramp.get());
-			button5Pressed = true;
+			db1 = true;
 		}
 	}
 	

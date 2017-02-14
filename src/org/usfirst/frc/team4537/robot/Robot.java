@@ -44,6 +44,7 @@ public class Robot extends SampleRobot {
 		//Insert default values into DB variables
 		SmartDashboard.putBoolean("DB/Button 0", driveBase.accCode);
 		SmartDashboard.putBoolean("DB/Button 1", false);
+		SmartDashboard.putBoolean("DB/Button 2", true);
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
 		//Start compressor
@@ -111,7 +112,7 @@ public class Robot extends SampleRobot {
     			SmartDashboard.putBoolean("DB/Button 1", false);
     		}
 	    	else {
-	    		pneumatics.button5Pressed = false;
+	    		pneumatics.db1 = false;
 	    	}
 	    	
 			if (driveBase.arcadeStick.getRawButton(4)) {
@@ -132,6 +133,13 @@ public class Robot extends SampleRobot {
 	    	else {
 	    		pneumatics.button6Pressed = false;
 	    	}
+			
+			if (SmartDashboard.getBoolean("DB/Button 2", false)) {
+				pneumatics.startCompressor();
+			}
+			else {
+				pneumatics.stopCompressor();
+			}
 			
 			//Update current draw over last 500ms
 			if (driveBase.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {
@@ -162,6 +170,7 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putString("DB/String 9", "CCurrent: " + Double.toString(driveBase.climberCurrent) + "A");
 			SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(driveBase.leftSpeed));
 			SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(driveBase.rightSpeed));
+			SmartDashboard.putString("DB/String 4", "Pressure: " + Double.toString(CustomFunctions.floor((pneumatics.pressure-258.2)/4.348)) + "psi");
 			SmartDashboard.putBoolean("DB/LED 0", driveBase.accCode);
 
 			// wait for a motor update time

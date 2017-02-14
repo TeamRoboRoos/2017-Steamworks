@@ -126,6 +126,7 @@ public class DriveBase {
 		//FIXME A ball motor may need to be inverted
 		ballMotor7 = new CANTalon(BALL_MOTOR_7);
 		ballMotor7.setExpiration(0.1);
+		ballMotor7.setInverted(true);
 		ballMotor8 = new CANTalon(BALL_MOTOR_8);
 		ballMotor8.setExpiration(0.1);
 		climbMotor9 = new CANTalon(CLIMB_MOTOR_9);
