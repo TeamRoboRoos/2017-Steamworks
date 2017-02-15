@@ -16,13 +16,13 @@ public class Climber {
 	}
 	public void climbUp() {
 		setSpeed();
-		driveBase.climbMotor9.set(-climberSpeed);
+		driveBase.climbMotor9.set(climberSpeed);
 		System.out.println(Double.toString(climberSpeed));
 	}
 
 	public void climbDown() {
 		setSpeed();
-		driveBase.climbMotor9.set(climberSpeed/4);
+		driveBase.climbMotor9.set(-climberSpeed/4);
 		System.out.println(Double.toString(-climberSpeed/4));
 	}
 

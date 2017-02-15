@@ -15,7 +15,7 @@ public class Robot extends SampleRobot {
 	Climber climber;
 	BallSystem ballSystem;
 	Pneumatics pneumatics;
-	
+
 	//Averagable variables
 	private AverageCalculator leftMotorsCurrentDrawAvg;
 	private AverageCalculator rightMotorsCurrentDrawAvg;
@@ -75,7 +75,6 @@ public class Robot extends SampleRobot {
 		while (isOperatorControl() && isEnabled()) {
 			
 			driveBase.drive();
-			
 			pneumatics.debug();
 			
 			//Calculate robot telemetry data
@@ -85,7 +84,7 @@ public class Robot extends SampleRobot {
 			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
 			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
 			//Robot speed monitors
-			this.robotVelocityAvg.addValue((driveBase.dlMotor3.getEncPosition() + driveBase.drMotor4.getEncPosition() /2) * driveBase.ENCODER_RATIO);
+			this.robotVelocityAvg.addValue(Functions.encoder((driveBase.dlMotor3.getEncPosition() + driveBase.drMotor4.getEncPosition() /2)));
 			
 			
 			if (driveBase.arcadeStick.getRawButton(1)) {
@@ -170,7 +169,7 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putString("DB/String 9", "CCurrent: " + Double.toString(driveBase.climberCurrent) + "A");
 			SmartDashboard.putString("DB/String 1", "LSpeed: " + Double.toString(driveBase.leftSpeed));
 			SmartDashboard.putString("DB/String 6", "RSpeed: " + Double.toString(driveBase.rightSpeed));
-			SmartDashboard.putString("DB/String 4", "Pressure: " + Double.toString(CustomFunctions.floor((pneumatics.pressure-258.2)/4.348)) + "psi");
+			SmartDashboard.putString("DB/String 4", "Pressure: " + Double.toString(Functions.floor(Functions.pressure(pneumatics.pressure))) + "psi");
 			SmartDashboard.putBoolean("DB/LED 0", driveBase.accCode);
 
 			// wait for a motor update time

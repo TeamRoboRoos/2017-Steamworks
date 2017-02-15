@@ -81,13 +81,13 @@ public class PID {
 	}
 	
 	public void debug() {
-		System.out.println("T    : " + Double.toString(CustomFunctions.floor(this.target, 2)));
-		//System.out.println("V    : " + Double.toString(RandomCrap.floor(value, 2)));
-		System.out.println("E    : " + Double.toString(CustomFunctions.floor(this.error)));
-		System.out.println("P    : " + Double.toString(CustomFunctions.floor(this.proportional, 2)));
-		System.out.println("I    : " + Double.toString(CustomFunctions.floor(this.integral, 2)));
-		System.out.println("D    : " + Double.toString(CustomFunctions.floor(this.derivative, 2)));
-		System.out.println("O    : " + Double.toString(CustomFunctions.floor(this.output, 2)));
+		System.out.println("T    : " + Double.toString(Functions.floor(this.target, 2)));
+		//System.out.println("V    : " + Double.toString(Functions.floor(value, 2)));
+		System.out.println("E    : " + Double.toString(Functions.floor(this.error)));
+		System.out.println("P    : " + Double.toString(Functions.floor(this.proportional, 2)));
+		System.out.println("I    : " + Double.toString(Functions.floor(this.integral, 2)));
+		System.out.println("D    : " + Double.toString(Functions.floor(this.derivative, 2)));
+		System.out.println("O    : " + Double.toString(Functions.floor(this.output, 2)));
 		
 	}
 }

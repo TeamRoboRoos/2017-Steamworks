@@ -93,7 +93,6 @@ public class DriveBase {
 
 
 	//private AverageCalculator shooterVelocityAvg = new AverageCalculator(100);
-	public final int ENCODER_RATIO = 12557;
 	//Ticks per metre: 12557
 
 	//PID Loops
@@ -200,7 +199,7 @@ public class DriveBase {
 			turnAngle = ((0.56 * Math.PI) / (360 / turnAngle));
 		}*/
 		
-		turnAngle = -arcadeStick.getRawAxis(2) * 2;
+		turnAngle = -arcadeStick.getRawAxis(3) * 2;
 		turnAngle *= 12557;
 		//turnAngle = 2 * 12557;
 		
@@ -261,7 +260,7 @@ public class DriveBase {
 
 		//Get move values from joystick
 		moveValue = arcadeStick.getRawAxis(1) * direction;
-		rotateValue = arcadeStick.getRawAxis(3);
+		rotateValue = arcadeStick.getRawAxis(2);
 
 		//Store signs in case they need to be reapplied
 		moveSign = 1;
@@ -286,7 +285,8 @@ public class DriveBase {
 			moveValue *= moveSign;
 			rotateValue *= rotateSign;
 		}
-
+	
+		
 		//Joystick deadzones to remove jitter from controller
 		if (moveValue < mDeadzone && moveValue > -mDeadzone) {
 			moveValue = 0;
@@ -339,8 +339,8 @@ public class DriveBase {
 		}
 
 		//Limit speed output to the throttle for adjustment on the fly
-		leftSpeed *= (1 - arcadeStick.getRawAxis(2));
-		rightSpeed *= (1 - arcadeStick.getRawAxis(2));
+		leftSpeed *= (1 - arcadeStick.getRawAxis(3));
+		rightSpeed *= (1 - arcadeStick.getRawAxis(3));
 
 		//Store speed outputs for next iteration
 		previousLeftSpeed = leftSpeed;
