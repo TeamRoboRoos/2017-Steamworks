@@ -11,40 +11,39 @@ public class Pneumatics {
 	Solenoid ramp;
 	Solenoid flippers;
 	public double pressure = 0;
-	
-	private final int PCM_PORT = 10;
-	public boolean db1 = false;
+
+	public boolean db1Pressed = false;
 	public boolean button6Pressed = false;
-	
+
 	public Pneumatics() {
 		pressureSensor = new AnalogInput(1);
-		compressor = new Compressor(PCM_PORT);
-		ramp = new Solenoid(PCM_PORT, 0);
-		flippers = new Solenoid(PCM_PORT, 1);
+		compressor = new Compressor(Config.PCM_CAN_PORT);
+		ramp = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_RAMP_PORT);
+		flippers = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
 	}
-	
+
 	public void startCompressor() {
 		compressor.start();
 	}
-	
+
 	public void stopCompressor() {
 		compressor.stop();
 	}
-	
+
 	public void toggleRamp() {
-		if (!db1) {
+		if (!db1Pressed) {
 			ramp.set(!ramp.get());
-			db1 = true;
+			db1Pressed = true;
 		}
 	}
-	
+
 	public void toggleFlippers() {
 		if (!button6Pressed) {
 			flippers.set(!flippers.get());
 			button6Pressed = true;
 		}
 	}
-	
+
 	public void debug() {
 		SmartDashboard.putBoolean("DB/LED 1", ramp.get());
 		SmartDashboard.putBoolean("DB/LED 2", flippers.get());

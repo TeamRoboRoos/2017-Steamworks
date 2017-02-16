@@ -14,6 +14,7 @@ public class Climber {
 		climberSpeed = Math.min(SmartDashboard.getNumber("DB/Slider 1", 0.75), 1);
 		climberSpeed = Math.max(SmartDashboard.getNumber("DB/Slider 1", 0.75), -1);
 	}
+
 	public void climbUp() {
 		setSpeed();
 		driveBase.climbMotor9.set(climberSpeed);

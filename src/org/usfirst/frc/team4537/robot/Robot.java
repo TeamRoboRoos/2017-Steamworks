@@ -22,13 +22,16 @@ public class Robot extends SampleRobot {
 	private AverageCalculator climberMotorCurrentDrawAvg;
 	private AverageCalculator robotVelocityAvg;
 	private AverageCalculator pressureAvg;
-	
+
+	private long lastTime = 0;
+	private double testMotorSpeed = 0.3;
+
 	public Robot() {
 		driveBase = new DriveBase();
 		climber = new Climber();
 		ballSystem = new BallSystem();
 		pneumatics = new Pneumatics();
-		
+
 		leftMotorsCurrentDrawAvg = new AverageCalculator(200);
 		rightMotorsCurrentDrawAvg = new AverageCalculator(200);
 		climberMotorCurrentDrawAvg = new AverageCalculator(200);
@@ -73,20 +76,11 @@ public class Robot extends SampleRobot {
 	@Override
 	public void operatorControl() {
 		while (isOperatorControl() && isEnabled()) {
-			
+
 			driveBase.drive();
 			pneumatics.debug();
-			
-			//Calculate robot telemetry data
-			//Robot current monitors
-			this.leftMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(0) + driveBase.pdp.getCurrent(1) + driveBase.pdp.getCurrent(2));
-			this.rightMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(13) + driveBase.pdp.getCurrent(14) + driveBase.pdp.getCurrent(15));
-			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
-			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
-			//Robot speed monitors
-			this.robotVelocityAvg.addValue(Functions.encoder((driveBase.dlMotor3.getEncPosition() + driveBase.drMotor4.getEncPosition() /2)));
-			
-			
+
+			//XXX Joystick Buttons
 			if (driveBase.arcadeStick.getRawButton(1)) {
 				climber.climbUp();
 			}
@@ -98,26 +92,26 @@ public class Robot extends SampleRobot {
 			else {
 				climber.climbDefault();
 			}
-	    	
+
 			if (driveBase.arcadeStick.getRawButton(2)) {
 				driveBase.changeDirection();
 			}
 			else {
 				driveBase.button2Pressed = false;
 			}
-			
-	    	if (SmartDashboard.getBoolean("DB/Button 1", false)) {
-    			pneumatics.toggleRamp();
-    			SmartDashboard.putBoolean("DB/Button 1", false);
-    		}
-	    	else {
-	    		pneumatics.db1 = false;
-	    	}
-	    	
+
+			if (SmartDashboard.getBoolean("DB/Button 1", false)) {
+				pneumatics.toggleRamp();
+				SmartDashboard.putBoolean("DB/Button 1", false);
+			}
+			else {
+				pneumatics.db1Pressed = false;
+			}
+
 			if (driveBase.arcadeStick.getRawButton(4)) {
 				driveBase.halfSpeed();
 			}
-			
+
 			if (driveBase.arcadeStick.getRawButton(5)) {
 				ballSystem.ballIn();
 			}
@@ -125,21 +119,29 @@ public class Robot extends SampleRobot {
 			else {
 				ballSystem.ballDefault();
 			}
-			
+
 			if (driveBase.arcadeStick.getRawButton(6)) {
-    			pneumatics.toggleFlippers();
-    		}
-	    	else {
-	    		pneumatics.button6Pressed = false;
-	    	}
-			
+				pneumatics.toggleFlippers();
+			}
+			else {
+				pneumatics.button6Pressed = false;
+			}
+
 			if (SmartDashboard.getBoolean("DB/Button 2", false)) {
 				pneumatics.startCompressor();
 			}
 			else {
 				pneumatics.stopCompressor();
 			}
-			
+
+			//Calculate robot telemetry data
+			//Robot current monitors
+			this.leftMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(0) + driveBase.pdp.getCurrent(1) + driveBase.pdp.getCurrent(2));
+			this.rightMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(13) + driveBase.pdp.getCurrent(14) + driveBase.pdp.getCurrent(15));
+			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
+			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
+			//Robot speed monitors
+
 			//Update current draw over last 500ms
 			if (driveBase.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {
 				driveBase.leftCurrent = leftMotorsCurrentDrawAvg.getAverage();
@@ -159,9 +161,9 @@ public class Robot extends SampleRobot {
 				robotVelocityAvg.reset();
 				driveBase.lastSystemTimeVelocity = System.currentTimeMillis();
 			}
-	    	
-	    	
-	    	
+
+
+
 			SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(driveBase.direction));
 			SmartDashboard.putString("DB/String 5", DriverStation.getInstance().getAlliance() + " " + Integer.toString(DriverStation.getInstance().getLocation()));
 			SmartDashboard.putString("DB/String 2", "LCurrent: " + Double.toString(driveBase.leftCurrent) + "A");
@@ -182,5 +184,12 @@ public class Robot extends SampleRobot {
 	 */
 	@Override
 	public void test() {
+		while (isTest() && isEnabled()) {
+			driveBase.climbMotor9.set(testMotorSpeed);
+			if (lastTime + 15*1000 < System.currentTimeMillis()) {
+				testMotorSpeed *= -1;
+				lastTime = System.currentTimeMillis();
+			}
+		}
 	}
 }
