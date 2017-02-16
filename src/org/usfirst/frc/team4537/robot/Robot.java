@@ -1,10 +1,8 @@
 package org.usfirst.frc.team4537.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
-
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -132,6 +130,17 @@ public class Robot extends SampleRobot {
 			}
 			else {
 				pneumatics.stopCompressor();
+			}
+			
+			if (driveBase.arcadeStick.getRawButton(13)) {
+				ballSystem.ballIn();
+			}
+			//Set to 0 by default
+			else if (driveBase.arcadeStick.getRawButton(12)) {
+				ballSystem.ballOut();
+			}
+			else {
+				ballSystem.ballDefault();
 			}
 
 			//Calculate robot telemetry data
