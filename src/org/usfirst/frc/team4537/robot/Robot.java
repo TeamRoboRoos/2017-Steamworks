@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Robot extends SampleRobot {
-
 	DriveBase driveBase;
 	Climber climber;
 	BallSystem ballSystem;
 	Pneumatics pneumatics;
+	//FIXME Sensors sensors;
 
 	//Averagable variables
 	private AverageCalculator leftMotorsCurrentDrawAvg;
@@ -21,14 +21,12 @@ public class Robot extends SampleRobot {
 	private AverageCalculator robotVelocityAvg;
 	private AverageCalculator pressureAvg;
 
-	private long lastTime = 0;
-	private double testMotorSpeed = 0.3;
-
 	public Robot() {
 		driveBase = new DriveBase();
 		climber = new Climber();
 		ballSystem = new BallSystem();
 		pneumatics = new Pneumatics();
+		//FIXME sensors = new Sensors();
 
 		leftMotorsCurrentDrawAvg = new AverageCalculator(200);
 		rightMotorsCurrentDrawAvg = new AverageCalculator(200);
@@ -49,9 +47,9 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("DB/Slider 0", 0.75);
 		SmartDashboard.putNumber("DB/Slider 1", 0.75);
 		//Start compressor
-		pneumatics.startCompressor();
+		pneumatics.compressorStart();
 		//Initialize gyroscope
-		//gyroscope.calibrate();
+		//FIXME sensors.gyroscope.calibrate();
 	}
 
 	/**
@@ -81,6 +79,7 @@ public class Robot extends SampleRobot {
 			//XXX Joystick Buttons
 			if (driveBase.arcadeStick.getRawButton(1)) {
 				climber.climbUp();
+				pneumatics.compressorStop();
 			}
 			//Backwards at quarter speed
 			else if (driveBase.arcadeStick.getRawButton(3)) {
@@ -89,6 +88,9 @@ public class Robot extends SampleRobot {
 			//Set to 0 by default
 			else {
 				climber.climbDefault();
+				if (pneumatics.compresserEnabled) {
+					pneumatics.compressorStart();
+				}
 			}
 
 			if (driveBase.arcadeStick.getRawButton(2)) {
@@ -113,9 +115,12 @@ public class Robot extends SampleRobot {
 			if (driveBase.arcadeStick.getRawButton(5)) {
 				ballSystem.ballIn();
 			}
+			else if (driveBase.arcadeStick.getRawButton(16)) {
+				ballSystem.ballOut();
+			}
 			//Set to 0 by default
 			else {
-				ballSystem.ballDefault();
+				ballSystem.ballIODefault();
 			}
 
 			if (driveBase.arcadeStick.getRawButton(6)) {
@@ -125,22 +130,24 @@ public class Robot extends SampleRobot {
 				pneumatics.button6Pressed = false;
 			}
 
-			if (SmartDashboard.getBoolean("DB/Button 2", false)) {
-				pneumatics.startCompressor();
+			if (SmartDashboard.getBoolean("DB/Button 2", false) && !pneumatics.compresserEnabled) {
+				pneumatics.compressorStart();
+				pneumatics.compresserEnabled = true;
 			}
 			else {
-				pneumatics.stopCompressor();
+				pneumatics.compresserEnabled = false;
+				pneumatics.compressorStop();
 			}
-			
+
 			if (driveBase.arcadeStick.getRawButton(13)) {
-				ballSystem.ballIn();
+				ballSystem.ballUp();
 			}
 			//Set to 0 by default
 			else if (driveBase.arcadeStick.getRawButton(12)) {
-				ballSystem.ballOut();
+				ballSystem.ballDown();
 			}
 			else {
-				ballSystem.ballDefault();
+				ballSystem.ballUDDefault();
 			}
 
 			//Calculate robot telemetry data
@@ -149,7 +156,6 @@ public class Robot extends SampleRobot {
 			this.rightMotorsCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(13) + driveBase.pdp.getCurrent(14) + driveBase.pdp.getCurrent(15));
 			this.climberMotorCurrentDrawAvg.addValue(driveBase.pdp.getCurrent(12));
 			this.pressureAvg.addValue(pneumatics.pressureSensor.getValue());
-			//Robot speed monitors
 
 			//Update current draw over last 500ms
 			if (driveBase.lastSystemTimeCurrent + 500 < System.currentTimeMillis()) {
@@ -172,7 +178,6 @@ public class Robot extends SampleRobot {
 			}
 
 
-
 			SmartDashboard.putString("DB/String 0", "Direction: " + Integer.toString(driveBase.direction));
 			SmartDashboard.putString("DB/String 5", DriverStation.getInstance().getAlliance() + " " + Integer.toString(DriverStation.getInstance().getLocation()));
 			SmartDashboard.putString("DB/String 2", "LCurrent: " + Double.toString(driveBase.leftCurrent) + "A");
@@ -183,7 +188,7 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putString("DB/String 4", "Pressure: " + Double.toString(Functions.floor(Functions.pressure(pneumatics.pressure))) + "psi");
 			SmartDashboard.putBoolean("DB/LED 0", driveBase.accCode);
 
-			// wait for a motor update time
+			//Wait for a motor update time
 			Timer.delay(0.005); 
 		}
 	}
@@ -193,12 +198,6 @@ public class Robot extends SampleRobot {
 	 */
 	@Override
 	public void test() {
-		while (isTest() && isEnabled()) {
-			driveBase.climbMotor9.set(testMotorSpeed);
-			if (lastTime + 15*1000 < System.currentTimeMillis()) {
-				testMotorSpeed *= -1;
-				lastTime = System.currentTimeMillis();
-			}
-		}
+
 	}
 }

@@ -1,23 +1,15 @@
 package org.usfirst.frc.team4537.robot;
 
 import com.ctre.CANTalon;
-
-import edu.wpi.first.wpilibj.ADXL362;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveBase {
+	//FIXME Sensors sensors;
+
 	Joystick arcadeStick;
 	PowerDistributionPanel pdp;
-	ADXRS450_Gyro gyroscope;
-	ADXL362 accelerometer;
-	ADXL362.AllAxes accelerometerAll;
-	Accelerometer accRio;
 
 	//These shouldn't need to be changed
 	CANTalon dlMotor1;
@@ -29,9 +21,6 @@ public class DriveBase {
 	CANTalon ballMotor7;
 	CANTalon ballMotor8;
 	CANTalon climbMotor9;
-
-	CANTalon leftEncoder;
-	CANTalon rightEncoder;
 
 	//Arcade definitions
 	public double leftSpeed = 0;
@@ -76,6 +65,7 @@ public class DriveBase {
 	private PID drivePID = new PID(0.1, 1, 1, 0.1);
 
 	public DriveBase() {
+		//FIXME sensors = new Sensors();
 		arcadeStick = new Joystick(Config.JOYSTICK_DRIVE);
 		//For all that is good in this world, DO NOT touch or breathe on these
 		//Left motors
@@ -109,14 +99,6 @@ public class DriveBase {
 
 		//Setup PDP
 		pdp = new PowerDistributionPanel();
-
-		//Setup gyro and accelerometers
-		gyroscope = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-		accelerometer = new ADXL362(SPI.Port.kOnboardCS1, Accelerometer.Range.k8G);
-		accRio = new BuiltInAccelerometer(Accelerometer.Range.k4G);
-
-		leftEncoder = dlMotor3;
-		rightEncoder = drMotor4;
 	}
 
 	public void drive() {		
@@ -125,8 +107,8 @@ public class DriveBase {
 		Config.speedMultiplier = Math.min(SmartDashboard.getNumber("DB/Slider 0", 0.75), 1);
 
 		//Get move values from joystick
-		moveValue = arcadeStick.getRawAxis(Config.AXIS_Y) * direction;
-		rotateValue = arcadeStick.getRawAxis(Config.AXIS_Z);
+		moveValue = arcadeStick.getRawAxis(Config.AXIS_Y) * Config.JOYSTICK_LINEAR_SENSITIVITY * direction;
+		rotateValue = arcadeStick.getRawAxis(Config.AXIS_Z) * Config.JOYSTICK_ROTATION_SENSITIVITY;
 
 		//Store signs in case they need to be reapplied
 		moveSign = 1;
@@ -238,38 +220,13 @@ public class DriveBase {
 		drMotor4.set(rightSpeed);
 		drMotor5.set(rightSpeed);
 		drMotor6.set(rightSpeed);
-
-		randomGyroAndAccStuff();
-
 	}
 
-	public void randomGyroAndAccStuff() {
-		//Print telemetry/debug information to the Smart Dashboard/Console
-		//System.out.println("Pressure: " + Double.toString(PID.floor((pressure-258.2)/4.348)) + "psi"); //y = 4.348x + 258.2 x=(y-258.2)/4.348
 
-		//System.out.print("Gyro A: " + Double.toString(gyroscope.getAngle()));
-		//System.out.println(" Gyro R: " + Double.toString(gyroscope.getRate()));
-
-		//System.out.println(Double.toString(accelerometer.getZ()));
-		//System.out.println(accelerometer);
-
-		//System.out.println("AccR: " + Double.toString(Math.sqrt(Math.pow(accRio.getX(), 2) + Math.pow(accRio.getY(), 2) + Math.pow(accRio.getZ(), 2))));
-
-		/*this.accelerometerAll = this.accelerometer.getAccelerations();
-		if (this.accelerometerAll != null) {
-			System.out.print("Acce X: " + Double.toString(accelerometerAll.XAxis));
-			System.out.print(" Acce Y: " + Double.toString(accelerometerAll.YAxis));
-			System.out.println(" Acce Z: " + Double.toString(accelerometerAll.ZAxis));
-		}
-		else {
-			System.out.println("Can't Read Acc.");
-		}
-		 */
-	}
 
 	public void resetDrivePID() {
-		leftEncoder.setEncPosition(0);
-		rightEncoder.setEncPosition(0);
+		//FIXME sensors.leftEncoder.setEncPosition(0);
+		//FIXME sensors.rightEncoder.setEncPosition(0);
 		currentMV = 0;
 		turnLeftPID.init();
 		turnRightPID.init();
@@ -306,8 +263,8 @@ public class DriveBase {
 		this.turnLeftPID.setTarget(turnAngle);
 		this.turnRightPID.setTarget(turnAngle);
 
-		leftSpeed = this.turnLeftPID.calculate(this.leftEncoder.getEncPosition());// /12557
-		rightSpeed = this.turnRightPID.calculate(-this.rightEncoder.getEncPosition());
+		//FIXME leftSpeed = this.turnLeftPID.calculate(this.sensors.leftEncoder.getEncPosition());// /12557
+		//FIXME rightSpeed = this.turnRightPID.calculate(-this.sensors.rightEncoder.getEncPosition());
 
 		/*if (lastSystemTimePID+500 < System.currentTimeMillis()) {
 			System.out.println("LENC : " + Double.toString(PID.floor(motor3.getEncPosition())));// / 12557)));

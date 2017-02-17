@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber {
 	DriveBase driveBase;
+	
 	private double climberSpeed = 0.75;
 
 	public Climber() {

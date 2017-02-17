@@ -10,8 +10,10 @@ public class Pneumatics {
 	Compressor compressor;
 	Solenoid ramp;
 	Solenoid flippers;
+	
 	public double pressure = 0;
 
+	public boolean compresserEnabled = true;
 	public boolean db1Pressed = false;
 	public boolean button6Pressed = false;
 
@@ -22,11 +24,11 @@ public class Pneumatics {
 		flippers = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
 	}
 
-	public void startCompressor() {
+	public void compressorStart() {
 		compressor.start();
 	}
 
-	public void stopCompressor() {
+	public void compressorStop() {
 		compressor.stop();
 	}
 

@@ -27,8 +27,11 @@ public class Config {
 
 	public static final int POWER_INDEX = 2;
 	public static double speedMultiplier = 0.5;
+	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.4;
+	public static final double JOYSTICK_LINEAR_SENSITIVITY = 1;
 
 	public static final int PCM_CAN_PORT = 10;
 	public static final int PCM_FLIPPER_PORT = 1;
 	public static final int PCM_RAMP_PORT = 0;
+
 }
