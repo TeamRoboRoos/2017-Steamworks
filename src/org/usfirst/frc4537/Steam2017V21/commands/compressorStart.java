@@ -12,6 +12,7 @@
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc4537.Steam2017V21.Robot;
+import org.usfirst.frc4537.Steam2017V21.subsystems.Pneumatics;
 
 /**
  *
@@ -40,11 +41,12 @@ public class compressorStart extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	Pneumatics.compressorStart();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true

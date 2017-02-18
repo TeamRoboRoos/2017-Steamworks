@@ -34,10 +34,7 @@ public class Robot extends IterativeRobot {
     public static Camera camera;
     public static Climber climber;
     public static DriveBase driveBase;
-    public static Feeder feeder;
-    public static Gears gears;
     public static Pickup pickup;
-    public static Shooter shooter;
     public static Telemetery telemetery;
     public static Vision vision;
 
@@ -53,10 +50,7 @@ public class Robot extends IterativeRobot {
         camera = new Camera();
         climber = new Climber();
         driveBase = new DriveBase();
-        feeder = new Feeder();
-        gears = new Gears();
         pickup = new Pickup();
-        shooter = new Shooter();
         telemetery = new Telemetery();
         vision = new Vision();
 

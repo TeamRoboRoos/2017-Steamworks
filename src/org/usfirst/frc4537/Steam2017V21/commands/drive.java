@@ -11,6 +11,8 @@
 
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.command.Command;
+
+import org.usfirst.frc4537.Steam2017V21.Config;
 import org.usfirst.frc4537.Steam2017V21.Robot;
 
 /**
@@ -45,8 +47,8 @@ public class drive extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	double speed = Robot.oi.arcade.getRawAxis(1);
-    	double turn = Robot.oi.arcade.getRawAxis(3);
+    	double speed = Robot.oi.arcade.getRawAxis(Config.AXIS_Y) * Config.JOYSTICK_LINEAR_SENSITIVITY;
+    	double turn = Robot.oi.arcade.getRawAxis(Config.AXIS_Z) * Config.JOYSTICK_ROTATION_SENSITIVITY;
     	Robot.driveBase.arcadeDrive(speed, turn);
     }
 
