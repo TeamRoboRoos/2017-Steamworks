@@ -11,6 +11,8 @@
 
 package org.usfirst.frc4537.Steam2017V21;
 
+import org.usfirst.frc4537.Steam2017V21.subsystems.MXP;
+
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
@@ -30,13 +33,19 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * floating around.
  */
 public class RobotMap {
-	public static DigitalInput climberLimitSwitch;
 	public static Compressor Compressor;
 	public static Solenoid rampSolenoid;
 	public static Solenoid flippersSolenoid;
 	public static ADXRS450_Gyro telemeteryGyro;
 	public static Accelerometer telemeteryAccRio;
 	public static AnalogInput telemeteryPressure;
+	public static DigitalInput climberLimitSwitch;
+	public static DigitalInput mxpIBlack;
+	public static DigitalInput mxpIWhite;
+	public static DigitalInput mxpIGreen;
+	public static DigitalInput mxpIYellow;
+	public static DigitalInput mxpIBlue;
+	public static DigitalOutput mxpORed;
 	public static PowerDistributionPanel telemeteryPowerDistributionPanel;
 
 	//Declare Motors
@@ -63,6 +72,24 @@ public class RobotMap {
 	public static void init() {
 		climberLimitSwitch = new DigitalInput(Config.DGI_CLIMBER_SWITCH);
 		LiveWindow.addSensor("Climber", "Limit Switch", climberLimitSwitch);
+		
+		mxpIBlack = new DigitalInput(Config.DGI_MXP_BLACK);
+		LiveWindow.addSensor("MXP", "In Black", mxpIBlack);
+		
+		mxpIWhite = new DigitalInput(Config.DGI_MXP_WHITE);
+		LiveWindow.addSensor("MXP", "In White", mxpIWhite);
+		
+		mxpIGreen = new DigitalInput(Config.DGI_MXP_GREEN);
+		LiveWindow.addSensor("MXP", "In Green", mxpIGreen);
+		
+		mxpIYellow = new DigitalInput(Config.DGI_MXP_YELLOW);
+		LiveWindow.addSensor("MXP", "In Yellow", mxpIYellow);
+		
+		mxpIBlue = new DigitalInput(Config.DGI_MXP_BLUE);
+		LiveWindow.addSensor("MXP", "In Blue", mxpIBlue);
+		
+		mxpORed = new DigitalOutput(Config.DGO_MXP_RED);
+		LiveWindow.addActuator("MXP", "Out Red", mxpORed);
 
 		telemeteryGyro = new ADXRS450_Gyro(Config.GYRO_PORT);
 		LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);
@@ -73,7 +100,7 @@ public class RobotMap {
 		Compressor = new Compressor(0);
 
 		rampSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_RAMP_PORT);
-		LiveWindow.addActuator("Pneumaticsw", "Solenoid 1", rampSolenoid);
+		LiveWindow.addActuator("Pneumatics", "Solenoid 1", rampSolenoid);
 
 		flippersSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
 		LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);

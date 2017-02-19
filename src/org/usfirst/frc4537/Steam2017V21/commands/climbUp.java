@@ -12,7 +12,9 @@
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc4537.Steam2017V21.Robot;
+import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.subsystems.Climber;
+import org.usfirst.frc4537.Steam2017V21.subsystems.MXP;
 
 /**
  *
@@ -32,6 +34,7 @@ public class climbUp extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Climber.climbUp();
+    	MXP.setPin(RobotMap.mxpORed, true);
     }
 
     // Make this return true when this Command no longer needs to run execute()

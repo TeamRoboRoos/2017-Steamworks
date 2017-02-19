@@ -22,7 +22,6 @@ public class Config {
 	//Button board and buttons
 	public static final int BUTTON_BOARD = 1;
 	public static final int BUTTON_CLIMB_UP = 1;
-	public static final int BUTTON_CLIMB_DOWN = 4;
 	public static final int BUTTON_RAMP_TOGGLE = 2;
 	public static final int BUTTON_FLIPPERS_TOGGLE = 3;
 
@@ -55,6 +54,12 @@ public class Config {
 	public static final double PID_DRIVE_D = 1.0;
 	public static final double PID_DRIVE_S = 0.1;
 	
+	//Camera server variables
+	public static final String CAM_0_NAME = "0";
+	public static final String CAM_0_PATH = "/dev/video0";
+	public static final String CAM_1_NAME = "1";
+	public static final String CAM_1_PATH = "/dev/video1";
+	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
 	public static final Accelerometer.Range ACCELEROMETER_RANGE = Accelerometer.Range.k4G;
@@ -64,4 +69,10 @@ public class Config {
 	
 	//Digital Sensors
 	public static final int DGI_CLIMBER_SWITCH = 0;
+	public static final int DGI_MXP_BLACK = 10; //MPX PIN 11 IN
+	public static final int DGI_MXP_WHITE = 11; //MPX PIN 13 IN
+	public static final int DGI_MXP_GREEN = 12; //MPX PIN 15 IN
+	public static final int DGI_MXP_YELLOW = 13; //MPX PIN 17 IN
+	public static final int DGI_MXP_BLUE = 14; //MPX PIN 19 IN
+	public static final int DGO_MXP_RED = 15; //MPX PIN 21 OUT
 }
