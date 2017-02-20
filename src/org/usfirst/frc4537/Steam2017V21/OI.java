@@ -54,7 +54,8 @@ public class OI {
 
 
     public Joystick arcade;
-    public JoystickButton changeDirectionButton;
+    public JoystickButton toggleDirectionButton;
+    public JoystickButton toggleHalfSpeedButton;
     public Joystick buttonBoard;
     public JoystickButton climbUpButton;
     public JoystickButton rampToggleButton;
@@ -63,9 +64,13 @@ public class OI {
     public OI() {
         arcade = new Joystick(Config.JOYSTICK_DRIVE);
         buttonBoard = new Joystick(Config.BUTTON_BOARD);
-        
-        changeDirectionButton = new JoystickButton(arcade,Config.CHANGE_DIRECTION_TOGGLE);
-        changeDirectionButton.whenPressed(new changeDirection());
+
+        toggleHalfSpeedButton = new JoystickButton(arcade,Config.HALVE_SPEED_TOGGLE);
+        toggleHalfSpeedButton.whenPressed(new halfDriveSpeedToggle());
+        toggleHalfSpeedButton.whenReleased(new halfDriveSpeedToggle());
+
+        toggleDirectionButton = new JoystickButton(arcade,Config.CHANGE_DIRECTION_TOGGLE);
+        toggleDirectionButton.whenPressed(new changeDirection());
         
         climbUpButton = new JoystickButton(buttonBoard, Config.BUTTON_CLIMB_UP);
         climbUpButton.whileHeld(new climbUp());

@@ -10,19 +10,23 @@ public class Config {
 	public static final int AXIS_Y = 1;
 	public static final int AXIS_Z = 2;
 	public static final int AXIS_T = 3;
+	//Joystick buttons
+	public static final int HALVE_SPEED_TOGGLE = 1;
 	public static final int CHANGE_DIRECTION_TOGGLE = 2;
-	
 	//Joystick power index, Squared, Cubed etc
 	public static final int POWER_INDEX = 2;
 	//Joystick Deadzones
 	public static final double DEADZONE_M = 0.01;
 	public static final double DEADZONE_R = 0.01;
-	//Joystick rotation and linear sensitivities
-	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.75;
+	//Joystick rotation and linear sensitivities and modifiers
+	public static final double JOYSTICK_ROTATION_SENSITIVITY = 1;
 	public static final double JOYSTICK_LINEAR_SENSITIVITY = 1;
+	public static final double JOYSTICK_HALF_MOVE_MULTIPLIER = 0.5;
+	public static final double JOYSTICK_HALF_ROTATE_MULTIPLIER = 0.5;
 
-	//Joystick and button board buttons
+	//Button board and axis
 	public static final int BUTTON_BOARD = 1;
+	//Button board buttons
 	public static final int BUTTON_CLIMB_UP = 1;
 	public static final int BUTTON_RAMP_TOGGLE = 2;
 	public static final int BUTTON_FLIPPERS_TOGGLE = 3;
@@ -51,10 +55,16 @@ public class Config {
 	public static final int PCM_RAMP_PORT = 0;
 	
 	//PID control init variables
-	public static final double PID_DRIVE_P = 0.1;
-	public static final double PID_DRIVE_I = 1.0;
-	public static final double PID_DRIVE_D = 1.0;
-	public static final double PID_DRIVE_S = 0.1;
+	//Move PID values
+	public static final double PID_MOVE_P = 0.1;
+	public static final double PID_MOVE_I = 1.0;
+	public static final double PID_MOVE_D = 1.0;
+	public static final double PID_MOVE_S = 0.1;
+	//Turn PID values
+	public static final double PID_TURN_P = 0.15;
+	public static final double PID_TURN_I = 1.0;
+	public static final double PID_TURN_D = 1.0;
+	public static final double PID_TURN_S = 0.1;
 	
 	//Camera server variables
 	public static final String CAM_0_NAME = "0";

@@ -33,12 +33,15 @@ public class DriveBase extends Subsystem {
 	private final CANTalon CANTalonRight5 = RobotMap.drMotor5;
 	private final CANTalon CANTalonRight6 = RobotMap.drMotor6;
 
-	private PID drivePID;
+	private PID movePID;
+	private PID turnPID;
 	private double previousMV = 0;
+	private double previousRV = 0;
 
 	private double leftSpeed = 0;
 	private double rightSpeed = 0;
-	private int direction = 1;
+	private int direction = -1;
+	private boolean speedHalved = false;
 	private double moveValue = 0;
 	private double rotateValue = 0;
 	private double moveSign = 1;
@@ -50,7 +53,8 @@ public class DriveBase extends Subsystem {
 	// here. Call these from Commands.
 
 	public DriveBase() {
-		drivePID = new PID(Config.PID_DRIVE_P, Config.PID_DRIVE_I, Config.PID_DRIVE_D, Config.PID_DRIVE_S);
+		movePID = new PID(Config.PID_MOVE_P, Config.PID_MOVE_I, Config.PID_MOVE_D, Config.PID_MOVE_S);
+		turnPID = new PID(Config.PID_TURN_P, Config.PID_TURN_I, Config.PID_TURN_D, Config.PID_TURN_S);
 	}
 
 	public void initDefaultCommand() {
@@ -83,6 +87,11 @@ public class DriveBase extends Subsystem {
 		if (rotateValue < 0) {
 			rotateSign = -1;
 		}
+		
+		if (speedHalved) {
+			moveValue *= Config.JOYSTICK_HALF_MOVE_MULTIPLIER;
+			rotateValue *= Config.JOYSTICK_HALF_ROTATE_MULTIPLIER;
+		}
 
 		moveValue = Math.pow(moveValue, Config.POWER_INDEX);
 		rotateValue = Math.pow(rotateValue, Config.POWER_INDEX);
@@ -92,9 +101,13 @@ public class DriveBase extends Subsystem {
 		rotateValue = Math.abs(rotateValue) * rotateSign;
 
 		//Use a PID for acceleration control
-		drivePID.setTarget(moveValue);
-		moveValue = drivePID.calculate(previousMV);
+		movePID.setTarget(moveValue);
+		moveValue = movePID.calculate(previousMV);
 		previousMV = moveValue;
+		
+		turnPID.setTarget(rotateValue);
+		rotateValue = turnPID.calculate(previousRV);
+		previousRV = rotateValue;
 
 		//Mathy arcadey stuffy
 		if (moveValue > 0) {
@@ -148,5 +161,8 @@ public class DriveBase extends Subsystem {
 	}
 	public void changeDirection() {
 		direction *= -1;
+	}
+	public void halfSpeedToggle() {
+		speedHalved = !speedHalved;
 	}
 }
