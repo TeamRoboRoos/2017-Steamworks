@@ -15,6 +15,8 @@ import org.usfirst.frc4537.Steam2017V21.commands.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.*;
+import edu.wpi.first.wpilibj.command.Command;
+
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 
@@ -52,6 +54,7 @@ public class OI {
 
 
     public Joystick arcade;
+    public JoystickButton changeDirectionButton;
     public Joystick buttonBoard;
     public JoystickButton climbUpButton;
     public JoystickButton rampToggleButton;
@@ -60,6 +63,9 @@ public class OI {
     public OI() {
         arcade = new Joystick(Config.JOYSTICK_DRIVE);
         buttonBoard = new Joystick(Config.BUTTON_BOARD);
+        
+        changeDirectionButton = new JoystickButton(arcade,Config.CHANGE_DIRECTION_TOGGLE);
+        changeDirectionButton.whenPressed(new changeDirection());
         
         climbUpButton = new JoystickButton(buttonBoard, Config.BUTTON_CLIMB_UP);
         climbUpButton.whileHeld(new climbUp());
@@ -75,7 +81,6 @@ public class OI {
         SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
         SmartDashboard.putData("cameraStart", new cameraStart());
         SmartDashboard.putData("climb", new climbUp());
-        SmartDashboard.putData("climbStop", new climbStop());
         SmartDashboard.putData("compressorStart", new compressorStart());
         SmartDashboard.putData("compressorStop", new compressorStop());
         SmartDashboard.putData("gearsLoad", new gearsLoad());

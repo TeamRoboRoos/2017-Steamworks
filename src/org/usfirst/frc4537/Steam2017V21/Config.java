@@ -10,6 +10,8 @@ public class Config {
 	public static final int AXIS_Y = 1;
 	public static final int AXIS_Z = 2;
 	public static final int AXIS_T = 3;
+	public static final int CHANGE_DIRECTION_TOGGLE = 2;
+	
 	//Joystick power index, Squared, Cubed etc
 	public static final int POWER_INDEX = 2;
 	//Joystick Deadzones
@@ -19,7 +21,7 @@ public class Config {
 	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.75;
 	public static final double JOYSTICK_LINEAR_SENSITIVITY = 1;
 
-	//Button board and buttons
+	//Joystick and button board buttons
 	public static final int BUTTON_BOARD = 1;
 	public static final int BUTTON_CLIMB_UP = 1;
 	public static final int BUTTON_RAMP_TOGGLE = 2;
