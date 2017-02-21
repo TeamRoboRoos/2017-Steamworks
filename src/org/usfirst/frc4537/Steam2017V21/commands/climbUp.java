@@ -11,6 +11,8 @@
 
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.subsystems.Climber;
@@ -35,6 +37,7 @@ public class climbUp extends Command {
     protected void execute() {
     	Climber.climbUp();
     	MXP.setPin(RobotMap.mxpORed, true);
+    	//SmartDashboard.putNumber("Climber Current", Telemetery.)
     }
 
     // Make this return true when this Command no longer needs to run execute()

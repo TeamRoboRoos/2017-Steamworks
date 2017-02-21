@@ -19,11 +19,11 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 /**
  *
  */
-public class mxpRead extends Command {
-	private int binary = 0;
+public class pressureRead extends Command {
+	private double pressure = 0;
 
-    public mxpRead() {
-    	requires(Robot.mxp);
+    public pressureRead() {
+    	requires(Robot.telemetery);
     }
     
     // Called just before this Command runs the first time
@@ -32,24 +32,9 @@ public class mxpRead extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	binary = 0;
-    	if (!MXP.readPin(RobotMap.mxpIBlack)) {
-    		binary += 1;
-    	}
-    	if (!MXP.readPin(RobotMap.mxpIWhite)) {
-    		binary += 2;
-    	}
-    	if (!MXP.readPin(RobotMap.mxpIGreen)) {
-    		binary += 4;
-    	}
-    	if (!MXP.readPin(RobotMap.mxpIYellow)) {
-    		binary += 8;
-    	}
-    	if (!MXP.readPin(RobotMap.mxpIBlue)) {
-    		binary += 16;
-    	}
-    	SmartDashboard.putNumber("MXPValue", binary);
-    	MXP.mxpValue = binary;
+    	pressure = Telemetery.pressureGet();
+    	SmartDashboard.putNumber("Pressure", pressure);
+        Telemetery.telemeteryDebug();
     }
 
     // Make this return true when this Command no longer needs to run execute()

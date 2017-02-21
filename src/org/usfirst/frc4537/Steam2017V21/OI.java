@@ -82,8 +82,9 @@ public class OI {
         flippersToggleButton.whenPressed(new flippersToggle());
 
 
+
         // SmartDashboard Buttons
-        SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
+       /* SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
         SmartDashboard.putData("cameraStart", new cameraStart());
         SmartDashboard.putData("climb", new climbUp());
         SmartDashboard.putData("compressorStart", new compressorStart());
@@ -92,7 +93,7 @@ public class OI {
         SmartDashboard.putData("pickup", new pickup());
         SmartDashboard.putData("sendStatus", new sendStatus());
         SmartDashboard.putData("visionMode", new visionMode());
-        SmartDashboard.putData("visionPin", new visionPin());
+        SmartDashboard.putData("visionPin", new visionPin()); */
     }
     
     public Joystick getButtonBoard() {

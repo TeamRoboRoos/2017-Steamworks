@@ -28,9 +28,9 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Telemetery extends Subsystem {
-    private final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
-    private final AnalogInput pressure = RobotMap.telemeteryPressure;
-    private final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
+    private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
+    private static final AnalogInput pressure = RobotMap.telemeteryPressure;
+    private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -38,6 +38,17 @@ public class Telemetery extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
+    	setDefaultCommand(new pressureRead());
     }
+    
+    public static double pressureGet() {
+    	//Correct equation for Kevin I think??? pls no quote me 
+    	return ((pressure.getValue()-258.2)/4.348);
+    }
+    public static void telemeteryDebug() {
+    	System.out.println(pressure.getValue());
+    	System.out.println(pressureGet());
+    }
+
 }
 

@@ -19,8 +19,8 @@ public class Config {
 	public static final double DEADZONE_M = 0.01;
 	public static final double DEADZONE_R = 0.01;
 	//Joystick rotation and linear sensitivities and modifiers
-	public static final double JOYSTICK_ROTATION_SENSITIVITY = 1;
 	public static final double JOYSTICK_LINEAR_SENSITIVITY = 1;
+	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.6;
 	public static final double JOYSTICK_HALF_MOVE_MULTIPLIER = 0.5;
 	public static final double JOYSTICK_HALF_ROTATE_MULTIPLIER = 0.5;
 
@@ -43,8 +43,8 @@ public class Config {
 	public static final int CLIMB_MOTOR_9 = 9;
 
 	//Robot speed limit
-	public static final double SPEED_MULTIPLIER = 0.75;
-	public static final double CLIMBER_SPEED = 0.75;
+	public static final double SPEED_MULTIPLIER = 1;
+	public static final double CLIMBER_SPEED = 1;
 
 	//PDP IDs and ports
 	public static final int PDP_CAN_PORT = 0;
