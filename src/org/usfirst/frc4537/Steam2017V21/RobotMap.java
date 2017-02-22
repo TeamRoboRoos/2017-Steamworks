@@ -58,8 +58,9 @@ public class RobotMap {
 	public static CANTalon ballMotor7;
 	public static CANTalon ballMotor8;
 	public static CANTalon climbMotor9;
-
-	//Climber Motor
+	//Declare encoders
+	public static CANTalon leftEncoder;
+	public static CANTalon rightEncoder;
 
 	//Motor IDs
 	private static final int MOTOR_DL_1 = Config.MOTOR_DL_1;
@@ -154,5 +155,11 @@ public class RobotMap {
 		RobotMap.climbMotor9 = new CANTalon(Config.CLIMB_MOTOR_9);
 		RobotMap.climbMotor9.setExpiration(0.1);
 		LiveWindow.addActuator("DriveBase", "Climb Motor 9", climbMotor9);
+		
+		//Encoders
+		RobotMap.leftEncoder = RobotMap.dlMotor3;
+		LiveWindow.addSensor("Encoder", "Left Encoder", leftEncoder);
+		RobotMap.rightEncoder = RobotMap.drMotor4;
+		LiveWindow.addSensor("Encoder", "Right Encoder", rightEncoder);
 	}
 }

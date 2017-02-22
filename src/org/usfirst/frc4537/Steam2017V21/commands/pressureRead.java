@@ -16,11 +16,17 @@ import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
+import com.ctre.CANTalon;
+
 /**
  *
  */
 public class pressureRead extends Command {
+	private CANTalon leftEncoder = RobotMap.leftEncoder;
+	private CANTalon rightEncoder = RobotMap.rightEncoder;
 	private double pressure = 0;
+	private int lEncVal = 0;
+	private int rEncVal = 0;
 
     public pressureRead() {
     	requires(Robot.telemetery);
@@ -33,7 +39,11 @@ public class pressureRead extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	pressure = Telemetery.pressureGet();
+    	lEncVal = leftEncoder.getEncPosition();
+    	rEncVal = rightEncoder.getEncPosition();
     	SmartDashboard.putNumber("Pressure", pressure);
+    	SmartDashboard.putNumber("LeftEncoder", lEncVal);
+    	SmartDashboard.putNumber("Right Encoder", rEncVal);
         Telemetery.telemeteryDebug();
     }
 
