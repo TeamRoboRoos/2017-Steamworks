@@ -162,7 +162,7 @@ public class DriveBase extends Subsystem {
 	public void changeDirection() {
 		direction *= -1;
 	}
-	public void halfSpeedToggle() {
-		speedHalved = !speedHalved;
+	public void halfSpeedSet(boolean value) {
+		speedHalved = value;
 	}
 }

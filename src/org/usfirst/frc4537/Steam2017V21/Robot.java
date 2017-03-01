@@ -46,7 +46,7 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-    RobotMap.init();
+    	RobotMap.init();
     	pneumatics = new Pneumatics();
         camera = new Camera();
         climber = new Climber();

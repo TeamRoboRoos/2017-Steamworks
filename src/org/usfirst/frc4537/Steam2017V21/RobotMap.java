@@ -10,11 +10,7 @@
 
 
 package org.usfirst.frc4537.Steam2017V21;
-
-import org.usfirst.frc4537.Steam2017V21.subsystems.MXP;
-
 import com.ctre.CANTalon;
-
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -55,9 +51,8 @@ public class RobotMap {
 	public static CANTalon drMotor4;
 	public static CANTalon drMotor5;
 	public static CANTalon drMotor6;
-	public static CANTalon ballMotor7;
-	public static CANTalon ballMotor8;
-	public static CANTalon climbMotor9;
+	public static CANTalon climbMotor1;
+	public static CANTalon climbMotor2;
 	//Declare encoders
 	public static CANTalon leftEncoder;
 	public static CANTalon rightEncoder;
@@ -97,8 +92,6 @@ public class RobotMap {
 
 		telemeteryAccRio = new BuiltInAccelerometer(Config.ACCELEROMETER_RANGE);
 		//FIXME LiveWindow.addSensor("Telemetary", "Accelerometer", telemeteryAccRio);
-
-		Compressor = new Compressor(0);
 
 		rampSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_RAMP_PORT);
 		LiveWindow.addActuator("Pneumatics", "Solenoid 1", rampSolenoid);
@@ -142,19 +135,14 @@ public class RobotMap {
 		RobotMap.drMotor6.setExpiration(0.1);
 		LiveWindow.addActuator("DriveBase", "Drive Right Motor 6", drMotor6);
 
-		//Ball motors
-		RobotMap.ballMotor7 = new CANTalon(Config.BALL_MOTOR_7);
-		RobotMap.ballMotor7.setExpiration(0.1);
-		LiveWindow.addActuator("Pickup", "Ball Motor 7", ballMotor7);
-
-		RobotMap.ballMotor8 = new CANTalon(Config.BALL_MOTOR_8);
-		RobotMap.ballMotor8.setExpiration(0.1);
-		LiveWindow.addActuator("Pickup", "Ball Motor 8", ballMotor8);
-
-		//Climber motor
-		RobotMap.climbMotor9 = new CANTalon(Config.CLIMB_MOTOR_9);
-		RobotMap.climbMotor9.setExpiration(0.1);
-		LiveWindow.addActuator("DriveBase", "Climb Motor 9", climbMotor9);
+		//Climber motors
+		RobotMap.climbMotor1 = new CANTalon(Config.CLIMB_MOTOR_1);
+		RobotMap.climbMotor1.setExpiration(0.1);
+		LiveWindow.addActuator("Climber", "Climb Motor 1", climbMotor1);
+		
+		RobotMap.climbMotor2 = new CANTalon(Config.CLIMB_MOTOR_2);
+		RobotMap.climbMotor2.setExpiration(0.1);
+		LiveWindow.addActuator("Climber", "Climb Motor 2", climbMotor2); 
 		
 		//Encoders
 		RobotMap.leftEncoder = RobotMap.dlMotor3;

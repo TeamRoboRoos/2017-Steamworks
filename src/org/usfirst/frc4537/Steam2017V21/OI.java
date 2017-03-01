@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.*;
 import edu.wpi.first.wpilibj.command.Command;
-
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 
@@ -58,6 +57,7 @@ public class OI {
     public JoystickButton toggleHalfSpeedButton;
     public Joystick buttonBoard;
     public JoystickButton climbUpButton;
+    public JoystickButton climbResetButton;
     public JoystickButton rampToggleButton;
     public JoystickButton flippersToggleButton;
 
@@ -66,14 +66,17 @@ public class OI {
         buttonBoard = new Joystick(Config.BUTTON_BOARD);
 
         toggleHalfSpeedButton = new JoystickButton(arcade,Config.HALVE_SPEED_TOGGLE);
-        toggleHalfSpeedButton.whenPressed(new halfDriveSpeedToggle());
-        toggleHalfSpeedButton.whenReleased(new halfDriveSpeedToggle());
+        toggleHalfSpeedButton.whenPressed(new halfDriveSpeedEnable());
+        toggleHalfSpeedButton.whenReleased(new halfDriveSpeedDisable());
 
         toggleDirectionButton = new JoystickButton(arcade,Config.CHANGE_DIRECTION_TOGGLE);
         toggleDirectionButton.whenPressed(new changeDirection());
-        
+
         climbUpButton = new JoystickButton(buttonBoard, Config.BUTTON_CLIMB_UP);
         climbUpButton.whileHeld(new climbUp());
+
+        climbResetButton = new JoystickButton(buttonBoard, Config.BUTTON_CLIMB_RESET);
+        climbResetButton.whenPressed(new climbReset());
 
         rampToggleButton = new JoystickButton(buttonBoard, Config.BUTTON_RAMP_TOGGLE);
         rampToggleButton.whenPressed(new rampToggle());

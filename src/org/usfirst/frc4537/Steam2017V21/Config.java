@@ -16,20 +16,21 @@ public class Config {
 	//Joystick power index, Squared, Cubed etc
 	public static final int POWER_INDEX = 2;
 	//Joystick Deadzones
-	public static final double DEADZONE_M = 0.01;
-	public static final double DEADZONE_R = 0.01;
+	public static final double DEADZONE_M = 0.001;
+	public static final double DEADZONE_R = 0.001;
 	//Joystick rotation and linear sensitivities and modifiers
 	public static final double JOYSTICK_LINEAR_SENSITIVITY = 1;
-	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.6;
+	public static final double JOYSTICK_ROTATION_SENSITIVITY = 0.8;
 	public static final double JOYSTICK_HALF_MOVE_MULTIPLIER = 0.5;
-	public static final double JOYSTICK_HALF_ROTATE_MULTIPLIER = 0.5;
+	public static final double JOYSTICK_HALF_ROTATE_MULTIPLIER = 0.6;
 
 	//Button board and axis
 	public static final int BUTTON_BOARD = 1;
 	//Button board buttons
 	public static final int BUTTON_CLIMB_UP = 1;
-	public static final int BUTTON_RAMP_TOGGLE = 2;
-	public static final int BUTTON_FLIPPERS_TOGGLE = 3;
+	public static final int BUTTON_CLIMB_RESET = 2;
+	public static final int BUTTON_RAMP_TOGGLE = 3;
+	public static final int BUTTON_FLIPPERS_TOGGLE = 4;
 
 	//Motor IDs
 	public static final int MOTOR_DL_1 = 1;
@@ -38,9 +39,8 @@ public class Config {
 	public static final int MOTOR_DR_4 = 4;
 	public static final int MOTOR_DR_5 = 5;
 	public static final int MOTOR_DR_6 = 6;
-	public static final int BALL_MOTOR_7 = 7;
-	public static final int BALL_MOTOR_8 = 8;
-	public static final int CLIMB_MOTOR_9 = 9;
+	public static final int CLIMB_MOTOR_1 = 7;
+	public static final int CLIMB_MOTOR_2 = 9;
 
 	//Robot speed limit
 	public static final double SPEED_MULTIPLIER = 1;
@@ -71,6 +71,8 @@ public class Config {
 	public static final String CAM_0_PATH = "/dev/video0";
 	public static final String CAM_1_NAME = "1";
 	public static final String CAM_1_PATH = "/dev/video1";
+	public static final String CAM_2_NAME = "2";
+	public static final String CAM_2_PATH = "/dev/video2";
 	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;

@@ -38,7 +38,7 @@ public class Telemetery extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new pressureRead());
+    	setDefaultCommand(new sdbPut());
     }
     
     public static double pressureGet() {
