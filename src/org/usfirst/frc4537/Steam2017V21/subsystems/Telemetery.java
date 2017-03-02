@@ -42,8 +42,7 @@ public class Telemetery extends Subsystem {
     }
     
     public static double pressureGet() {
-    	//Correct equation for Kevin I think??? pls no quote me 
-    	return ((pressure.getValue()-258.2)/4.348);
+    	return ((pressure.getValue()-410.902)/15.95);
     }
     public static void telemeteryDebug() {
     	System.out.println(pressure.getValue());
