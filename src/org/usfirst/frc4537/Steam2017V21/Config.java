@@ -69,7 +69,7 @@ public class Config {
 	//Camera server variables
 	public static final String[] CAM_NAMES = {"Climber", "Gear"};
 	public static final String[] CAM_PATHS = {"/dev/video0", "/dev/video1"};
-	public static final int[] CAM_RESOLUTION = {320, 240};
+	public static final int[] CAM_RESOLUTION = {320, 240}; //{Width, Height}
 	public static final int CAM_FPS = 15;
 	
 	//Gyro and accelerometer variables
@@ -99,5 +99,5 @@ public class Config {
 	
 	//Calibration
 	//Pressure 
-	public static final double[][] CAL_PRESSURE = {{0,0},{1,1},{2,2},{3,3}};
+	public static final double[][] CAL_PRESSURE = {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
 }

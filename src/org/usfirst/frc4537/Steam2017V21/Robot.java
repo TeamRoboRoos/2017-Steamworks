@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
+import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 /**
@@ -72,9 +73,11 @@ public class Robot extends IterativeRobot {
         	camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
         	camObj.setFPS(Config.CAM_FPS);
         }
+        
+        //Apply calibration to pressure sensor
+        Telemetery.pressureCal = Functions.statreg(Config.CAL_PRESSURE);
 
-        // instantiate the command used for the autonomous period
-
+        //Instantiate the command used for the autonomous period
         autonomousCommand = new AutonomousCommand();
 
     }

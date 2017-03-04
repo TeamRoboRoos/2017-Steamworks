@@ -25,10 +25,12 @@ public class Functions {
 	/**
 	 * Applies calibration to pressure reading
 	 * @param analogReading Reading from pressure sensor
+	 * @param gradient Gradient of trend line
+	 * @param intercept Intercept of trend line
 	 * @return Calibrated pressure reading
 	 */
-	public static double pressure(double analogReading) {
-		return (analogReading-258.2)/4.348;
+	public static double pressure(double analogReading, double gradient, double intercept) {
+		return (analogReading-intercept)/gradient;
 	}
 
 	/**
@@ -41,8 +43,8 @@ public class Functions {
 	}
 
 	/**
-	 * Calculate the statistical regression of the line
-	 * @param coords [[x,y],[x,y],[x,y]]
+	 * Calculate the gradient and intercept of the trend line
+	 * @param coords [[x,y],[x,y],...]
 	 * @return [Gradient, Intercept]
 	 */
 	public static double[] statreg(double[][] coords) {
@@ -57,13 +59,13 @@ public class Functions {
 
 		int n = coords.length;
 
-		for (int i = 0; i <= coords.length-1; i++) {
-			a =+ coords[i][0]*coords[i][1];
+		for (int i = 0; i < n; i++) {
+			a += coords[i][0]*coords[i][1];
 			b1 += coords[i][0];
 			b2 += coords[i][1];
-			c =+ Math.pow(coords[i][0], 2);
-			d1 =+ coords[i][0];
-			e =+ coords[i][1];
+			c += Math.pow(coords[i][0], 2);
+			d1 += coords[i][0];
+			e += coords[i][1];
 		}
 		a *= n;
 		b = b1 * b2;

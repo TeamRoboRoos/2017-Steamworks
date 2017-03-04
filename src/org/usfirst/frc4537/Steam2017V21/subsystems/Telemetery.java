@@ -33,6 +33,8 @@ public class Telemetery extends Subsystem {
     private static final AnalogInput pressure = RobotMap.telemeteryPressure;
     private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
 
+    public static double[] pressureCal = {};
+
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 
@@ -43,7 +45,7 @@ public class Telemetery extends Subsystem {
     }
     
     public static double pressureGet() {
-    	return ((pressure.getValue()-410.902)/15.95);
+    	return Functions.pressure(pressure.getValue(), pressureCal[0], pressureCal[1]);
     }
     
     public static void telemeteryDebug() {
