@@ -67,12 +67,10 @@ public class Config {
 	public static final double PID_TURN_S = 0.1;
 	
 	//Camera server variables
-	public static final String CAM_0_NAME = "0";
-	public static final String CAM_0_PATH = "/dev/video0";
-	public static final String CAM_1_NAME = "1";
-	public static final String CAM_1_PATH = "/dev/video1";
-	public static final String CAM_2_NAME = "2";
-	public static final String CAM_2_PATH = "/dev/video2";
+	public static final String[] CAM_NAMES = {"Climber", "Gear"};
+	public static final String[] CAM_PATHS = {"/dev/video0", "/dev/video1"};
+	public static final int[] CAM_RESOLUTION = {320, 240};
+	public static final int CAM_FPS = 15;
 	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
@@ -98,4 +96,8 @@ public class Config {
 	public static final int DGI_MXP_YELLOW = 13; //MPX PIN 17 IN
 	public static final int DGI_MXP_BLUE = 14; //MPX PIN 19 IN
 	public static final int DGO_MXP_RED = 15; //MPX PIN 21 OUT*/
+	
+	//Calibration
+	//Pressure 
+	public static final double[][] CAL_PRESSURE = {{0,0},{1,1},{2,2},{3,3}};
 }

@@ -13,6 +13,7 @@ package org.usfirst.frc4537.Steam2017V21.subsystems;
 
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
+import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogAccelerometer;
@@ -44,9 +45,16 @@ public class Telemetery extends Subsystem {
     public static double pressureGet() {
     	return ((pressure.getValue()-410.902)/15.95);
     }
+    
     public static void telemeteryDebug() {
-    	System.out.println(pressure.getValue());
-    	System.out.println(pressureGet());
+    	//System.out.println(pressure.getValue());
+    	//System.out.println(pressureGet());
+    	/*double[][] temp1 = {{0,0},{1,1},{2,2}};
+    	double temp2 = Functions.statreg(temp1)[0];
+    	double temp3 = Functions.statreg(temp1)[1];
+    	System.out.println(temp2);
+    	System.out.println(temp3);*/
+    	System.out.println(powerDistributionPanel.getCurrent(0)+powerDistributionPanel.getCurrent(12));
     }
 
 }
