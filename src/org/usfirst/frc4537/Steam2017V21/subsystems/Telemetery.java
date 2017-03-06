@@ -29,35 +29,40 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class Telemetery extends Subsystem {
-    private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
-    private static final AnalogInput pressure = RobotMap.telemeteryPressure;
-    private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
+	private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
+	private static final AnalogInput pressure = RobotMap.telemeteryPressure;
+	private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
 
-    public static double[] pressureCal = {};
+	public static double[] pressureCal = {};
 
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
+	// Put methods for controlling this subsystem
+	// here. Call these from Commands.
 
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new sdbPut());
-    }
-    
-    public static double pressureGet() {
-    	return Functions.pressure(pressure.getValue(), pressureCal[0], pressureCal[1]);
-    }
-    
-    public static void telemeteryDebug() {
-    	//System.out.println(pressure.getValue());
-    	//System.out.println(pressureGet());
-    	/*double[][] temp1 = {{0,0},{1,1},{2,2}};
-    	double temp2 = Functions.statreg(temp1)[0];
-    	double temp3 = Functions.statreg(temp1)[1];
-    	System.out.println(temp2);
-    	System.out.println(temp3);*/
-    	System.out.println(powerDistributionPanel.getCurrent(0)+powerDistributionPanel.getCurrent(12));
-    }
+	public void initDefaultCommand() {
+		// Set the default command for a subsystem here.
+		// setDefaultCommand(new MySpecialCommand());
+		setDefaultCommand(new sdbPut());
+	}
+
+	public static double pressureGet() {
+		return Functions.pressure(pressure.getValue(), pressureCal[0], pressureCal[1]);
+	}
+
+	public static double currentGet(int channel) {
+		return powerDistributionPanel.getCurrent(channel);
+	}
+
+	public static double gyroGetAngle() {
+		return gyro.getAngle();
+	}
+
+	public static double gyroGetRate() {
+		return gyro.getRate();
+	}
+
+	public static void telemeteryDebug() {
+		//bwgybr
+	}
 
 }
 

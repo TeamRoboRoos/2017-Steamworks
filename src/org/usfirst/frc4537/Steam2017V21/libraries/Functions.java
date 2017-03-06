@@ -4,11 +4,11 @@ public class Functions {
 
 	/**
 	 * Truncates  the decimal from a number
-	 * @param value Number to truncate
+	 * @param number Number to truncate
 	 * @return Truncated value
 	 */
-	public static double floor(double value) {
-		return Math.floor(value);
+	public static double floor(double number) {
+		return Math.floor(number);
 	}
 
 	/**

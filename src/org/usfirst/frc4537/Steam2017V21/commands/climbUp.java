@@ -35,8 +35,8 @@ public class climbUp extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Climber.climbUp();
-    	MXP.setPin(RobotMap.mxpORed, true);
-    	//SmartDashboard.putNumber("Climber Current", Telemetery.)
+    	MXP.setPin(RobotMap.mxpOBlack, true);
+    	//SmartDashboard.putNumber("Climber Current", Telemetry.)
     }
 
     // Make this return true when this Command no longer needs to run execute()

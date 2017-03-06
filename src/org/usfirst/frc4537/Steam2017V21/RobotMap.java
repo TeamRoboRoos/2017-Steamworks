@@ -36,12 +36,12 @@ public class RobotMap {
 	public static Accelerometer telemeteryAccRio;
 	public static AnalogInput telemeteryPressure;
 	public static DigitalInput climberLimitSwitch;
-	public static DigitalInput mxpIBlack;
-	public static DigitalInput mxpIWhite;
-	public static DigitalInput mxpIGreen;
-	public static DigitalInput mxpIYellow;
-	public static DigitalInput mxpIBlue;
-	public static DigitalOutput mxpORed;
+	public static DigitalInput mxpI1;
+	public static DigitalInput mxpI2;
+	public static DigitalInput mxpI4;
+	public static DigitalInput mxpI8;
+	public static DigitalOutput mxpOWhite;
+	public static DigitalOutput mxpOBlack;
 	public static PowerDistributionPanel telemeteryPowerDistributionPanel;
 
 	//Declare Motors
@@ -69,23 +69,23 @@ public class RobotMap {
 		climberLimitSwitch = new DigitalInput(Config.DGI_CLIMBER_SWITCH);
 		LiveWindow.addSensor("Climber", "Limit Switch", climberLimitSwitch);
 		
-		mxpIBlack = new DigitalInput(Config.DGI_MXP_BLACK);
-		LiveWindow.addSensor("MXP", "In Black", mxpIBlack);
+		mxpI1 = new DigitalInput(Config.DGI_MXP_1);
+		LiveWindow.addSensor("MXP", "In Black", mxpI1);
 		
-		mxpIWhite = new DigitalInput(Config.DGI_MXP_WHITE);
-		LiveWindow.addSensor("MXP", "In White", mxpIWhite);
+		mxpI2 = new DigitalInput(Config.DGI_MXP_2);
+		LiveWindow.addSensor("MXP", "In White", mxpI2);
 		
-		mxpIGreen = new DigitalInput(Config.DGI_MXP_GREEN);
-		LiveWindow.addSensor("MXP", "In Green", mxpIGreen);
+		mxpI4 = new DigitalInput(Config.DGI_MXP_4);
+		LiveWindow.addSensor("MXP", "In Green", mxpI4);
 		
-		mxpIYellow = new DigitalInput(Config.DGI_MXP_YELLOW);
-		LiveWindow.addSensor("MXP", "In Yellow", mxpIYellow);
+		mxpI8 = new DigitalInput(Config.DGI_MXP_8);
+		LiveWindow.addSensor("MXP", "In Yellow", mxpI8);
 		
-		mxpIBlue = new DigitalInput(Config.DGI_MXP_BLUE);
-		LiveWindow.addSensor("MXP", "In Blue", mxpIBlue);
+		mxpOWhite = new DigitalOutput(Config.DGO_MXP_WHITE);
+		LiveWindow.addSensor("MXP", "In Blue", mxpOWhite);
 		
-		mxpORed = new DigitalOutput(Config.DGO_MXP_RED);
-		LiveWindow.addActuator("MXP", "Out Red", mxpORed);
+		mxpOBlack = new DigitalOutput(Config.DGO_MXP_BLACK);
+		LiveWindow.addActuator("MXP", "Out Red", mxpOBlack);
 
 		telemeteryGyro = new ADXRS450_Gyro(Config.GYRO_PORT);
 		LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);

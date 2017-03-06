@@ -32,7 +32,7 @@ public class climbStop extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Climber.climbStop();
-    	MXP.setPin(RobotMap.mxpORed, false);
+    	MXP.setPin(RobotMap.mxpOBlack, false);
     }
 
     // Make this return true when this Command no longer needs to run execute()

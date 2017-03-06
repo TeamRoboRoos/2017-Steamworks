@@ -27,10 +27,10 @@ public class Config {
 	//Button board and axis
 	public static final int BUTTON_BOARD = 1;
 	//Button board buttons
-	public static final int BUTTON_CLIMB_UP = 1;
+	public static final int BUTTON_CLIMB_UP = 3;
 	public static final int BUTTON_CLIMB_RESET = 2;
-	public static final int BUTTON_RAMP_TOGGLE = 3;
-	public static final int BUTTON_FLIPPERS_TOGGLE = 4;
+	public static final int BUTTON_RAMP_TOGGLE = 4;
+	public static final int BUTTON_FLIPPERS_TOGGLE = 1;
 
 	//Motor IDs
 	public static final int MOTOR_DL_1 = 1;
@@ -83,21 +83,18 @@ public class Config {
 	//Climber Limit Switch
 	public static final int DGI_CLIMBER_SWITCH = 0;
 	//MXP IO
-	public static final int DGI_MXP_BLACK = 12; //MPX PIN 11 IN
-	public static final int DGI_MXP_WHITE = 14; //MPX PIN 13 IN
-	public static final int DGI_MXP_GREEN = 13; //MPX PIN 15 IN
-	public static final int DGI_MXP_YELLOW = 15; //MPX PIN 17 IN
-	public static final int DGI_MXP_BLUE = 11; //MPX PIN 19 IN
-	public static final int DGO_MXP_RED = 10; //MPX PIN 21 OUT
-	
-	/*public static final int DGI_MXP_BLACK = 10; //MPX PIN 11 IN
-	public static final int DGI_MXP_WHITE = 11; //MPX PIN 13 IN
-	public static final int DGI_MXP_GREEN = 12; //MPX PIN 15 IN
-	public static final int DGI_MXP_YELLOW = 13; //MPX PIN 17 IN
-	public static final int DGI_MXP_BLUE = 14; //MPX PIN 19 IN
-	public static final int DGO_MXP_RED = 15; //MPX PIN 21 OUT*/
+	public static final int DGI_MXP_1 = 12; 	//MPX PIN 15 IN		//Green
+	public static final int DGI_MXP_2 = 13; 	//MPX PIN 17 IN		//Yellow
+	public static final int DGI_MXP_4 = 14;		//MPX PIN 19 IN		//Blue
+	public static final int DGI_MXP_8 = 15;		//MPX PIN 21 IN		//Red
+	public static final int DGO_MXP_WHITE = 11;	//MPX PIN 13 OUT	//White
+	public static final int DGO_MXP_BLACK = 10;	//MPX PIN 11 OUT	//Black
 	
 	//Calibration
 	//Pressure 
 	public static final double[][] CAL_PRESSURE = {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
+	
+	/**
+	 * 
+	 */
 }

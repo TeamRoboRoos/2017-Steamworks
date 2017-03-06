@@ -32,6 +32,7 @@ public class sdbPut extends Command {
 	private boolean climbValue = false;
 	private boolean rampValue = false;
 	private boolean flippersValue = false;
+	private double climberCurrent = 0.0;
 
     public sdbPut() {
     	requires(Robot.telemetery);
@@ -49,13 +50,15 @@ public class sdbPut extends Command {
     	climbValue = climbSensor.get();
     	rampValue = Pneumatics.rampGetState();
     	flippersValue = Pneumatics.flippersGetState();
+    	climberCurrent = Telemetery.currentGet(0)+Telemetery.currentGet(12);
     	SmartDashboard.putNumber("Pressure", pressure);
     	SmartDashboard.putNumber("LeftEncoder", lEncVal);
     	SmartDashboard.putNumber("Right Encoder", rEncVal);
     	SmartDashboard.putBoolean("Climber", climbValue);
     	SmartDashboard.putBoolean("Ramp", rampValue);
     	SmartDashboard.putBoolean("Flippers", flippersValue);
-        Telemetery.telemeteryDebug();
+        SmartDashboard.putNumber("Climber Current", climberCurrent);
+        //Telemetery.telemeteryDebug();
     }
 
     // Make this return true when this Command no longer needs to run execute()
