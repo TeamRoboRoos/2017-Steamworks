@@ -33,6 +33,7 @@ public class sdbPut extends Command {
 	private boolean rampValue = false;
 	private boolean flippersValue = false;
 	private double climberCurrent = 0.0;
+	private double driveCurrent = 0.0;
 
     public sdbPut() {
     	requires(Robot.telemetery);
@@ -51,6 +52,7 @@ public class sdbPut extends Command {
     	rampValue = Pneumatics.rampGetState();
     	flippersValue = Pneumatics.flippersGetState();
     	climberCurrent = Telemetery.currentGet(0)+Telemetery.currentGet(12);
+    	driveCurrent = Telemetery.currentGet(1)+Telemetery.currentGet(2)+Telemetery.currentGet(3)+Telemetery.currentGet(13)+Telemetery.currentGet(14)+Telemetery.currentGet(15);
     	SmartDashboard.putNumber("Pressure", pressure);
     	SmartDashboard.putNumber("LeftEncoder", lEncVal);
     	SmartDashboard.putNumber("Right Encoder", rEncVal);
@@ -58,6 +60,7 @@ public class sdbPut extends Command {
     	SmartDashboard.putBoolean("Ramp", rampValue);
     	SmartDashboard.putBoolean("Flippers", flippersValue);
         SmartDashboard.putNumber("Climber Current", climberCurrent);
+        SmartDashboard.putNumber("Drive Current", driveCurrent);
         //Telemetery.telemeteryDebug();
     }
 
