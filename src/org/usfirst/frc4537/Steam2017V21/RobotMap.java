@@ -70,22 +70,22 @@ public class RobotMap {
 		LiveWindow.addSensor("Climber", "Limit Switch", climberLimitSwitch);
 		
 		mxpI1 = new DigitalInput(Config.DGI_MXP_1);
-		LiveWindow.addSensor("MXP", "In Black", mxpI1);
+		LiveWindow.addSensor("MXP", "In 1", mxpI1);
 		
 		mxpI2 = new DigitalInput(Config.DGI_MXP_2);
-		LiveWindow.addSensor("MXP", "In White", mxpI2);
+		LiveWindow.addSensor("MXP", "In 2", mxpI2);
 		
 		mxpI4 = new DigitalInput(Config.DGI_MXP_4);
-		LiveWindow.addSensor("MXP", "In Green", mxpI4);
+		LiveWindow.addSensor("MXP", "In 4", mxpI4);
 		
 		mxpI8 = new DigitalInput(Config.DGI_MXP_8);
-		LiveWindow.addSensor("MXP", "In Yellow", mxpI8);
+		LiveWindow.addSensor("MXP", "In 8", mxpI8);
 		
 		mxpOWhite = new DigitalOutput(Config.DGO_MXP_WHITE);
-		LiveWindow.addSensor("MXP", "In Blue", mxpOWhite);
+		LiveWindow.addSensor("MXP", "Out White", mxpOWhite);
 		
 		mxpOBlack = new DigitalOutput(Config.DGO_MXP_BLACK);
-		LiveWindow.addActuator("MXP", "Out Red", mxpOBlack);
+		LiveWindow.addActuator("MXP", "Out Black", mxpOBlack);
 
 		telemeteryGyro = new ADXRS450_Gyro(Config.GYRO_PORT);
 		LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);

@@ -31,6 +31,7 @@ public class Config {
 	public static final int BUTTON_CLIMB_RESET = 2;
 	public static final int BUTTON_RAMP_TOGGLE = 4;
 	public static final int BUTTON_FLIPPERS_TOGGLE = 1;
+	public static final int BUTTON_PARTY_OFF = 8;
 
 	//Motor IDs
 	public static final int MOTOR_DL_1 = 1;

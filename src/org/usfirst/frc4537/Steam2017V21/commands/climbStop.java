@@ -11,6 +11,8 @@
 
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.command.Command;
+
+import org.usfirst.frc4537.Steam2017V21.Config;
 import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.subsystems.Climber;
@@ -31,8 +33,13 @@ public class climbStop extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Climber.climbStop();
-    	MXP.setPin(RobotMap.mxpOBlack, false);
+    	if (!Robot.oi.buttonBoard.getRawButton(Config.BUTTON_CLIMB_UP)) {
+    		Climber.climbStop();
+    		MXP.setPin(RobotMap.mxpOBlack, false);
+    	}
+    	if (!Robot.oi.buttonBoard.getRawButton(Config.BUTTON_PARTY_OFF)) {
+    		MXP.setPin(RobotMap.mxpOWhite, false);
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()

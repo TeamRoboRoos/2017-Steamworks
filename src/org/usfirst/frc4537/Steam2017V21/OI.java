@@ -60,6 +60,7 @@ public class OI {
     public JoystickButton climbResetButton;
     public JoystickButton rampToggleButton;
     public JoystickButton flippersToggleButton;
+    public JoystickButton partyOffButton;
 
     public OI() {
         arcade = new Joystick(Config.JOYSTICK_DRIVE);
@@ -80,9 +81,12 @@ public class OI {
 
         rampToggleButton = new JoystickButton(buttonBoard, Config.BUTTON_RAMP_TOGGLE);
         rampToggleButton.whenPressed(new rampToggle());
-        
+
         flippersToggleButton = new JoystickButton(buttonBoard, Config.BUTTON_FLIPPERS_TOGGLE);
         flippersToggleButton.whenPressed(new flippersToggle());
+
+        partyOffButton = new JoystickButton(buttonBoard, Config.BUTTON_PARTY_OFF);
+        partyOffButton.whenPressed(new partyOff());
 
 
 
