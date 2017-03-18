@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
@@ -32,6 +35,7 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
+    SendableChooser autoChooser;
 
     public static OI oi;
     public static Camera camera;
@@ -64,10 +68,15 @@ public class Robot extends IterativeRobot {
         // pointers. Bad news. Don't move it.
         oi = new OI();
         
+        //Setup auto chooser
+        autoChooser = new SendableChooser();
+        autoChooser.addDefault("Base Line", new AutoBaseLine());
+        autoChooser.addDefault("Vision Left", new AutoVision(0));
+        autoChooser.addDefault("Vision Middle", new AutoVision(1));
+        autoChooser.addDefault("Vision Right", new AutoVision(2));
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        
         //Initialize camera capture servers
-        //CameraServer.getInstance().startAutomaticCapture(Config.CAM_0_NAME, Config.CAM_0_PATH);
-        //CameraServer.getInstance().startAutomaticCapture(Config.CAM_1_NAME, Config.CAM_1_PATH);
-        //CameraServer.getInstance().startAutomaticCapture(Config.CAM_2_NAME, Config.CAM_2_PATH);
         for (int i = 0; i <= Config.CAM_NAMES.length-1; i++) {
         	UsbCamera camObj = CameraServer.getInstance().startAutomaticCapture(Config.CAM_NAMES[i], Config.CAM_PATHS[i]);
         	camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
@@ -96,7 +105,8 @@ public class Robot extends IterativeRobot {
 
     public void autonomousInit() {
         // schedule the autonomous command (example)
-        if (autonomousCommand != null) autonomousCommand.start();
+        autonomousCommand = (Command) autoChooser.getSelected();
+    	if (autonomousCommand != null) autonomousCommand.start();
     }
 
     /**

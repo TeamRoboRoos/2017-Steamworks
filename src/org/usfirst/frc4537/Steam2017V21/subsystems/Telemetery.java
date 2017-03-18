@@ -15,11 +15,10 @@ import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogAccelerometer;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -32,6 +31,8 @@ public class Telemetery extends Subsystem {
 	private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
 	private static final AnalogInput pressure = RobotMap.telemeteryPressure;
 	private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
+	private static final CANTalon lenc = RobotMap.leftEncoder;
+	private static final CANTalon renc = RobotMap.rightEncoder;
 
 	public static double[] pressureCal = {};
 
@@ -60,8 +61,16 @@ public class Telemetery extends Subsystem {
 		return gyro.getRate();
 	}
 
+	public static double getEncL() {
+		return Functions.encoder(-lenc.getEncPosition());
+	}
+
+	public static double getEncR() {
+		return Functions.encoder(renc.getEncPosition());
+	}
+
 	public static void telemeteryDebug() {
-		//bwgybr
+
 	}
 
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
+import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 import com.ctre.CANTalon;
@@ -23,12 +24,10 @@ import com.ctre.CANTalon;
  *
  */
 public class sdbPut extends Command {
-	private CANTalon leftEncoder = RobotMap.leftEncoder;
-	private CANTalon rightEncoder = RobotMap.rightEncoder;
 	private DigitalInput climbSensor = RobotMap.climberLimitSwitch;
 	private double pressure = 0;
-	private int lEncVal = 0;
-	private int rEncVal = 0;
+	private double lEncVal = 0;
+	private double rEncVal = 0;
 	private boolean climbValue = false;
 	private boolean rampValue = false;
 	private boolean flippersValue = false;
@@ -46,8 +45,9 @@ public class sdbPut extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	pressure = Telemetery.pressureGet();
-    	lEncVal = leftEncoder.getEncPosition();
-    	rEncVal = rightEncoder.getEncPosition();
+    	lEncVal = Functions.encoder(Telemetery.getEncL());
+    	rEncVal = Functions.encoder(Telemetery.getEncR());
+    	//rEncVal = Telemetery.getEncR();
     	climbValue = climbSensor.get();
     	rampValue = Pneumatics.rampGetState();
     	flippersValue = Pneumatics.flippersGetState();
@@ -61,6 +61,8 @@ public class sdbPut extends Command {
     	SmartDashboard.putBoolean("Flippers", flippersValue);
         SmartDashboard.putNumber("Climber Current", climberCurrent);
         SmartDashboard.putNumber("Drive Current", driveCurrent);
+        //System.out.println("Distance: " + ((Telemetery.getEncL() + Telemetery.getEncR())/2) + "m");
+        System.out.println(Telemetery.pressureGet());
         //Telemetery.telemeteryDebug();
     }
 

@@ -32,6 +32,11 @@ public class Config {
 	public static final int BUTTON_RAMP_TOGGLE = 4;
 	public static final int BUTTON_FLIPPERS_TOGGLE = 1;
 	public static final int BUTTON_PARTY_OFF = 8;
+	/*public static final int BUTTON_CLIMB_UP = 1;
+	public static final int BUTTON_CLIMB_RESET = 2;
+	public static final int BUTTON_RAMP_TOGGLE = 3;
+	public static final int BUTTON_FLIPPERS_TOGGLE = 4;
+	public static final int BUTTON_PARTY_OFF = 5;*/
 
 	//Motor IDs
 	public static final int MOTOR_DL_1 = 1;
@@ -71,7 +76,7 @@ public class Config {
 	public static final String[] CAM_NAMES = {"Climber", "Gear"};
 	public static final String[] CAM_PATHS = {"/dev/video0", "/dev/video1"};
 	public static final int[] CAM_RESOLUTION = {320, 240}; //{Width, Height}
-	public static final int CAM_FPS = 15;
+	public static final int CAM_FPS = 10;
 	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
@@ -93,7 +98,8 @@ public class Config {
 	
 	//Calibration
 	//Pressure 
-	public static final double[][] CAL_PRESSURE = {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
+	public static final double[][] CAL_PRESSURE 
+	= {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
 	
 	/**
 	 * 

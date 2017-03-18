@@ -45,11 +45,9 @@ public class mxpRead extends Command {
     	if (MXP.readPin(RobotMap.mxpI8)) {
     		binary += 8;
     	}
-    	/*if (MXP.readPin(RobotMap.mxpIBlue)) {
-    		binary += 16;
-    	}*/
+
     	SmartDashboard.putNumber("MXPValue", binary);
-    	System.out.println(MXP.readPin(RobotMap.mxpI1)+" "+MXP.readPin(RobotMap.mxpI2)+" "+MXP.readPin(RobotMap.mxpI4)+" "+MXP.readPin(RobotMap.mxpI8));
+    	//System.out.println(MXP.readPin(RobotMap.mxpI1)+" "+MXP.readPin(RobotMap.mxpI2)+" "+MXP.readPin(RobotMap.mxpI4)+" "+MXP.readPin(RobotMap.mxpI8));
     	MXP.mxpValue = binary;
     }
 

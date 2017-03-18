@@ -36,7 +36,7 @@ public class climbUp extends Command {
     protected void execute() {
     	Climber.climbUp();
     	MXP.setPin(RobotMap.mxpOBlack, true);
-    	MXP.setPin(RobotMap.mxpOWhite, true);
+    	//MXP.setPin(RobotMap.mxpOWhite, false);
     	//SmartDashboard.putNumber("Climber Current", Telemetry.)
     }
 
