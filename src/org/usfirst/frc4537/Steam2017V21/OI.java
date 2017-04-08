@@ -61,16 +61,18 @@ public class OI {
     public JoystickButton rampToggleButton;
     public JoystickButton flippersToggleButton;
     public JoystickButton partyOffButton;
+    public JoystickButton startCompressorButton;
+    public JoystickButton stopCompressorButton;
 
     public OI() {
         arcade = new Joystick(Config.JOYSTICK_DRIVE);
         buttonBoard = new Joystick(Config.BUTTON_BOARD);
 
-        toggleHalfSpeedButton = new JoystickButton(arcade,Config.HALVE_SPEED_TOGGLE);
+        toggleHalfSpeedButton = new JoystickButton(arcade, Config.HALVE_SPEED_TOGGLE);
         toggleHalfSpeedButton.whenPressed(new halfDriveSpeedEnable());
         toggleHalfSpeedButton.whenReleased(new halfDriveSpeedDisable());
 
-        toggleDirectionButton = new JoystickButton(arcade,Config.CHANGE_DIRECTION_TOGGLE);
+        toggleDirectionButton = new JoystickButton(arcade, Config.CHANGE_DIRECTION_TOGGLE);
         toggleDirectionButton.whenPressed(new changeDirection());
 
         climbUpButton = new JoystickButton(buttonBoard, Config.BUTTON_CLIMB_UP);
@@ -88,6 +90,11 @@ public class OI {
         partyOffButton = new JoystickButton(buttonBoard, Config.BUTTON_PARTY_OFF);
         partyOffButton.whenPressed(new partyOff());
 
+        /*startCompressorButton = new JoystickButton(arcade, 3);
+        startCompressorButton.whenPressed(new compressorStart());
+
+        startCompressorButton = new JoystickButton(arcade, 4);
+        startCompressorButton.whenPressed(new compressorStop());*/
 
 
         // SmartDashboard Buttons

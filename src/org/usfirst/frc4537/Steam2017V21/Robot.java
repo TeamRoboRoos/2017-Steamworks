@@ -35,7 +35,7 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
-    SendableChooser autoChooser;
+    SendableChooser<Command> autoChooser;
 
     public static OI oi;
     public static Camera camera;
@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot {
         // pointers. Bad news. Don't move it.
         oi = new OI();
         
-        //Setup auto chooser
+        //Setup autonomous chooser
         autoChooser = new SendableChooser();
         autoChooser.addDefault("Base Line", new AutoBaseLine());
         autoChooser.addDefault("Vision Left", new AutoVision(0));

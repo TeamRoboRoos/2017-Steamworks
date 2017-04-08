@@ -62,7 +62,7 @@ public class sdbPut extends Command {
         SmartDashboard.putNumber("Climber Current", climberCurrent);
         SmartDashboard.putNumber("Drive Current", driveCurrent);
         //System.out.println("Distance: " + ((Telemetery.getEncL() + Telemetery.getEncR())/2) + "m");
-        System.out.println(Telemetery.pressureGet());
+        //System.out.println(Telemetery.pressureGet());
         //Telemetery.telemeteryDebug();
     }
 

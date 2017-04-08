@@ -29,7 +29,7 @@ public class AutoVision extends Command {
 	private final int FWD = 10;
 	private final int STOP = 15;
 	private final int NS = 0;
-	private final double OFFSET_TURN = 0.25;
+
 	private int mxpVal = 0;
 	private long lastTime = 0;
 	private int state = 0;
@@ -40,13 +40,14 @@ public class AutoVision extends Command {
 	private double encDistAvg = 0.0;
 	private double encDistAvgLast = 0.0;
 
-	final double DRIVE_SPEED_VIS = 0.65;
-	final double DRIVE_SPEED = 0.9; //was 0.75
-	final double TURN_SPEED = 0.8;
-	final double TURN_HELPER = 0.1;
-	
-	final double TURN_ANGLE = 60.0;
-	final double DRIVE_DISTANCE = 1.85;
+	private final double OFFSET_TURN = 0.25;
+	private final double DRIVE_SPEED_VIS = 0.55; //was 0.65
+	private final double DRIVE_SPEED = 0.9; //was 0.9
+	private final double TURN_SPEED = 0.8;
+	private final double TURN_HELPER = 0.1;
+
+	private final double TURN_ANGLE = 50.0; //was 60
+	private final double DRIVE_DISTANCE = 2.3; //was 1.85
 
 	public AutoVision(int param) {
 		side = param;
@@ -92,16 +93,19 @@ public class AutoVision extends Command {
 			if (side == 0) { //Turn right
 				Robot.driveBase.arcadeDrive(TURN_HELPER, TURN_SPEED);
 				if (gyroAngleLast+TURN_ANGLE <= gyroAngle) { //Condition to stop turning
+					gyroAngleLast = gyroAngle;
 					state = 3;
 				}
 			}
 			else if (side == 2) { //Turn left
 				Robot.driveBase.arcadeDrive(TURN_HELPER, -TURN_SPEED);
 				if (gyroAngleLast-TURN_ANGLE >= gyroAngle) { //Condition to stop turning
+					gyroAngleLast = gyroAngle;
 					state = 3;
 				}
 			}
 			else if (side == 1) { //Do nothing because we are in the middle and move on
+				gyroAngleLast = gyroAngle;
 				state = 3;
 			}
 			/*if (lastTime+2000 <= System.currentTimeMillis()) { //Condition to stop turning
@@ -113,34 +117,48 @@ public class AutoVision extends Command {
 			if (mxpVal == HARD_RIGHT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, 0.35 + OFFSET_TURN);
 				System.out.println("Vision: " + "HR");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == MED_RIGHT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, 0.3 + OFFSET_TURN);
 				System.out.println("Vision: " + "MR");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == SMALL_RIGHT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, 0.25 + OFFSET_TURN);
 				System.out.println("Vision: " + "LR");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == HARD_LEFT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, -0.35 + OFFSET_TURN);
 				System.out.println("Vision: " + "HL");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == MED_LEFT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, -0.3 + OFFSET_TURN);
 				System.out.println("Vision: " + "ML");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == SMALL_LEFT) {
 				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, -0.25 + OFFSET_TURN);
 				System.out.println("Vision: " + "LL");
+				gyroAngleLast = gyroAngle;
 			}
 			else if (mxpVal == STOP) { //Stop and move on
 				Robot.driveBase.arcadeDrive(0.0, 0.0);
 				System.out.println("Vision: " + "STOP");
+				gyroAngleLast = gyroAngle;
 				state = 4;
 			}
 			else { //Keep driving in case of invalid response, this either indicated tracking is lost, we should be driving forward or we have a problem
-				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, 0.0 + OFFSET_TURN);
+				//Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, 0.0 + OFFSET_TURN);
+				Robot.driveBase.arcadeDrive(-DRIVE_SPEED_VIS, -(gyroAngle-gyroAngleLast)/10);
+				//if (lastTime+1500 <= System.currentTimeMillis()) { //Condition to stop moving
+				//if (encDistAvgLast+DRIVE_DISTANCE <= encDistAvg) { //Condition to stop moving
+				//	gyroAngleLast = gyroAngle;
+				//	lastTime = System.currentTimeMillis();
+				//	state = 2; //FIXMe
+				//}
 				System.out.println("Vision: " + "NS/DF");
 			}
 		}
@@ -150,6 +168,7 @@ public class AutoVision extends Command {
 			Pneumatics.flippersToggle();
 			state = 5;
 		}
+
 		else if (state == 5) { //Wait for actuation time
 			Robot.driveBase.arcadeDrive(0.0, 0.0);
 			if (lastTime+500 <= System.currentTimeMillis()) {
@@ -157,8 +176,9 @@ public class AutoVision extends Command {
 				state = 6;
 			}
 		}
+
 		else if (state == 6) { //Drive backwards
-			Robot.driveBase.arcadeDrive(DRIVE_SPEED_VIS, 0.0);
+			Robot.driveBase.arcadeDrive(0.75, 0.0);
 			//if (lastTime+500+3000 <= System.currentTimeMillis()) {
 			if (encDistAvgLast-0.5 >= encDistAvg) {
 				state = 7;
@@ -190,4 +210,4 @@ public class AutoVision extends Command {
 	// subsystems is scheduled to run
 	protected void interrupted() {
 	}
-}
+} 

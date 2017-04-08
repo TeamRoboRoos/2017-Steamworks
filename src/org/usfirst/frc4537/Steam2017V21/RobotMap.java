@@ -99,6 +99,9 @@ public class RobotMap {
 		flippersSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
 		LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);
 
+		Compressor = new Compressor(Config.PCM_CAN_PORT);
+		LiveWindow.addActuator("Pneumatics", "Compressor", Compressor);
+
 		telemeteryPressure = new AnalogInput(Config.ANI_PRESSURE);
 		LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);
 
