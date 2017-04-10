@@ -2,7 +2,6 @@
 #include <Pixy.h>
 #include <Adafruit_NeoPixel.h>
 
-
 // ---------------------------------------------------------------------------------------
 //                                          Pixy Variables
 
@@ -20,14 +19,14 @@ Pixy pixy;
 #define PIXY_PUNY 2
 
 // Pins for pixy output
-int r0 = 4;
-int r1 = 5;
-int l0 = 2;
-int l1 = 3;
-int c0 = 6;
+int r0 = 6;
+int r1 = 7;
+int l0 = 8;
+int l1 = 9;
 
 // Pins for pixy input
-int in0 = 7;
+int in0 = 10;
+int in1 = 11;
 
 // Tracking how many frames have gone though
 int frameCount = 0;
@@ -37,14 +36,21 @@ int frameDelay = 50;
 //the amount you screwed up
 int severity=0;
 
+// Slow distance
+int slow = 1200;
+
+// Medium distance
+int medium = 600;
+
+
 // Numnber of frames since we last got only two blocks
 int framesWithMoreThanTwoBlocksOrLessThanOneBlock = 0;
 
 // ---------------------------------------------------------------------------------------
 //                                       Neopixel Variables
 
-// Pin out for Neo Pixies
-#define PIN 6
+// Pin out for NeoPixel
+#define PIN 5
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = pin number (most are valid)
@@ -77,6 +83,32 @@ int state = 0;
 int oldState = 0;
 
 bool partyMode = false;
+bool setupMode = true;
+
+bool debugOutput = false;
+
+// ---------------------------------------------------------------------------------------
+//                                          LED Light Ring
+
+#define LIGHT_RING_PIN 3
+#define LIGHT_RING_LEDS 40
+
+#define LIGHT_RING_GREEN 0
+#define LIGHT_RING_BLUE 1
+#define LIGHT_RING_RED 2
+
+#define LIGHT_RING 0
+#define LIGHT_STRIPS 1
+
+Adafruit_NeoPixel lightRing = Adafruit_NeoPixel(LIGHT_RING_LEDS, LIGHT_RING_PIN, NEO_GRB + NEO_KHZ800);
+
+int const LIGHT_RING_DELAY = 1500;
+
+long lastLightRingChange = 0;
+bool lightRingState = LIGHT_RING_GREEN;
+
+int numberOfFramesSinceLastLightRingColorChange = 0;
+int missedFramesNeededToChangeColor = 50;
 
 // ---------------------------------------------------------------------------------------
 //                                          Spike Switch
@@ -95,14 +127,19 @@ void setup() {
   pinMode(r1,OUTPUT);
   pinMode(l0,OUTPUT);
   pinMode(l1,OUTPUT);
-  pinMode(c0,OUTPUT);
 
-  pinMode(in0,INPUT);
+  //pinMode(in0,INPUT);
+ // pinMode(in1,INPUT);
  
   // Neo Pixel set up
   strip.begin();
-  solid(0,0,255);
+  solid(0,0,255, LIGHT_STRIPS);
   strip.show(); // Initialize all pixels to 'off'
+
+  
+  lightRing.begin();
+  solid(0,0,255, LIGHT_RING);
+  lightRing.show(); // Initialize all pixels to 'off'
 
   frontLED[0] = 17;
   frontLED[1] = 16;
@@ -122,50 +159,88 @@ void setup() {
 //                                         Main Loop
 
 void loop() {
- //if (digitalRead(in0) == HIGH) {
- //   partyMode = false;
- // }
- // else {
-    //checkPixy();
- // }
+  // Check for debug purposes
+  if (digitalRead(in0) == LOW) { debug("0 - LOW"); } 
+  if (digitalRead(in0) == HIGH) { debug("0 - HIGH"); } 
+  if (digitalRead(in1) == LOW) { debug("1 - LOW"); } 
+  if (digitalRead(in1) == HIGH) { debug("1 - HIGH"); } 
 
- 
+  // Output for debug purposes
+  //digitalWrite(7,LOW);
+  //digitalWrite(8,LOW);
+  //digitalWrite(9,LOW);
+  //digitalWrite(10,HIGH);
 
-  if (digitalRead(spikePin) == LOW) { 
-    Serial.println("LOW");
-    state = 4; 
-    digitalWrite(spikePin, HIGH);
-  } 
-  else { 
-    Serial.println("HIGH");
-    if (state == 4 && digitalRead(spikePin) == HIGH) {
-      state = 0;
-    }
-    
-    checkPixy(); 
+  
+/*
+  if (digitalRead(in1) == HIGH) {
+    backDelay = 150; 
+    partyMode = true; 
+  }
+  
+  if (partyMode && digitalRead(in0) == HIGH) {
+    state = 0;
+    partyMode = false; 
   }
 
+  */
+  if (setupMode) { setupModeLoop(); }
+  if (partyMode) { partyModeLoop(); }
+  else { competitionModeLoop(); }
+}
+
+void competitionModeLoop() {
+  
+  // Check to see if the spike has been hit
+
+  if (digitalRead(spikePin) == LOW) { 
+    state = 4; 
+    digitalWrite(l0,HIGH);
+    digitalWrite(l1,HIGH);
+    digitalWrite(r0,HIGH);
+    digitalWrite(r1,HIGH);
+    digitalWrite(spikePin, HIGH);
+    setupMode = false;
+  } 
+  
+  // If it hasn't been hit, we check to see if we thought it had been hit, and reset it. 
+  // Then we grab the pixy data
+  
+  else { 
+    if (state == 4 && digitalRead(spikePin) == HIGH) {
+      state = 0;
+      digitalWrite(l0,LOW);
+      digitalWrite(l1,LOW);;
+      digitalWrite(r0,LOW);
+      digitalWrite(r1,LOW);
+    }
+
+    checkPixy(); 
+    debug("--------------------------------------");
+  }
+
+  // Check to see if we need to change state
+
   if (oldState != state) {
-    solid(0,0,0);
+    solid(0,0,0, LIGHT_STRIPS);
     oldState = state;
   }
   
   long currentTime = millis();
   bool didChange = false;
+  bool didChangeLightRing = false;
 
- // Serial.print(state);
-  
-  
   if (currentTime >= lastBackChange + backDelay) {
-    if (state == 0) { solid(255, 255, 0); }
+    if (state == 0) { solid(255, 255, 0, LIGHT_STRIPS); }
     else if (state == 1) { right(); }
     else if (state == 2) { left(); }
     else if (state == 3) { forward();  }
-    else if (state == 4) { solid(255, 0, 0); }
-    else if (state == 5) { solid(0, 255, 255); }
-    else { party(); backDelay = 150; partyMode = true; }
+    else if (state == 4) { solid(255, 0, 0, LIGHT_STRIPS); }
+    else if (state == 5) { solid(0, 255, 255, LIGHT_STRIPS); }
     lastBackChange = currentTime;
     didChange = true;
+    debug("*****************************");
+    debug(state);
   }
   
   if (currentTime >= lastFrontChange + frontDelay && !partyMode) {
@@ -180,8 +255,72 @@ void loop() {
     if (frontDelay < 30) frontDelay = 30;
   }
 
+  if (numberOfFramesSinceLastLightRingColorChange > missedFramesNeededToChangeColor && !partyMode) {
+    numberOfFramesSinceLastLightRingColorChange = 0;
+    lightRingChangeColor();
+    didChangeLightRing = true;
+  }
+  
   if (didChange) {
     strip.show();
+  }
+
+  if (didChangeLightRing) {
+    lightRing.show();
+  }
+}
+
+void setupModeLoop() {
+  long currentTime = millis();
+  bool didChange = false;
+  bool didChangeLightRing = false;
+  
+  if (currentTime > lastLightRingChange + LIGHT_RING_DELAY) {
+    
+    lastLightRingChange = currentTime;
+
+    lightRingChangeColor();
+
+    didChangeLightRing = true;
+  }
+
+  if (currentTime >= lastFrontChange + frontDelay) {
+    if (lightRingState == LIGHT_RING_BLUE) {
+      frontLEDs(0,0,255);
+    }
+    else {
+      frontLEDs(0,255,0);
+    }
+    lastFrontChange = currentTime;
+    didChange = true;
+  }
+
+  if (didChange) {
+    strip.show();
+  }
+
+  if (didChangeLightRing) {
+    lightRing.show();
+  }
+}
+
+void partyModeLoop() {
+  long currentTime = millis();
+  bool didChange = false;
+  bool didChangeLightRing = false;
+  
+  if (currentTime >= lastBackChange + backDelay) {
+    party();  
+    didChangeLightRing = true;
+    didChange = true;
+  }
+  
+  if (didChange) {
+    strip.show();
+  }
+
+  if (didChangeLightRing) {
+    lightRing.show();
   }
 }
 
@@ -203,9 +342,10 @@ void checkPixy() {
     // How many blocks can it see?
     blocks = pixy.getBlocks();
 
-    // It may be worth checking that there are only two blocks. If there are more, stay on 
-    // the previous inStruction. If it happens too much, stop.
-    //if (blocks > 0 && blocks < 3)
+    debug("########################################");
+    debug(blocks);
+    debug("########################################");
+
     if (blocks)
     {
       // Reset missing blocks counter
@@ -232,8 +372,8 @@ void checkPixy() {
 
       int missingDistance = PIXY_MIDDLE - midX;     
       
-      Serial.println(blocks);
-      Serial.println(distanceApart);
+      debug(blocks);
+      debug(distanceApart);
 
       // Calulcate how far off we are (left or right - doesn't care)
       if (abs(missingDistance) < PIXY_RANGE) 
@@ -268,28 +408,25 @@ void checkPixy() {
           // Check if we ned to turn right
           if (missingDistance > 0) 
           {
-            Serial.println(" right");
+            debug(" right");
             state = 1;
             switch (severity)
             {
               case 3:                   // Hard
                 digitalWrite(l0,HIGH);
                 digitalWrite(l1,HIGH);
-                digitalWrite(c0,LOW);
                 digitalWrite(r0,LOW);
                 digitalWrite(r1,LOW);
                 break;
-              case 2:                   // Moderate
+              case 2:                 // Moderate
                 digitalWrite(l0,HIGH);
-                digitalWrite(l1,LOW);
-                digitalWrite(c0,LOW);
+                digitalWrite(l1,LOW);;
                 digitalWrite(r0,LOW);
                 digitalWrite(r1,LOW);
                 break;
               default:                  // Puny
                 digitalWrite(l0,LOW);
                 digitalWrite(l1,HIGH);
-                digitalWrite(c0,LOW);
                 digitalWrite(r0,LOW);
                 digitalWrite(r1,LOW);
             }
@@ -298,28 +435,25 @@ void checkPixy() {
           // Check if we need to turn right
           else
           {
-            Serial.println(" left");
+            debug(" left");
             state = 2;
             switch (severity)
             {
               case 3:                   // Hard
                 digitalWrite(l0,LOW);
                 digitalWrite(l1,LOW);
-                digitalWrite(c0,LOW);
                 digitalWrite(r0,HIGH);
                 digitalWrite(r1,HIGH);
                 break;
               case 2:                   // Moderate
                 digitalWrite(l0,LOW);
                 digitalWrite(l1,LOW);
-                digitalWrite(c0,LOW);
                 digitalWrite(r0,HIGH);
                 digitalWrite(r1,LOW);
                 break;
               default:                  // Puny
                 digitalWrite(l0,LOW);
                 digitalWrite(l1,LOW);
-                digitalWrite(c0,LOW);
                 digitalWrite(r0,LOW);
                 digitalWrite(r1,HIGH);
                 break;
@@ -330,12 +464,11 @@ void checkPixy() {
         // Driving straight
         else
         {
-          Serial.println(" forward");
+          debug(" forward");
           state = 3;
           // Later this should incorporate range
           digitalWrite(l0,HIGH);
           digitalWrite(l1,LOW);
-          digitalWrite(c0,LOW);
           digitalWrite(r0,HIGH);
           digitalWrite(r1,LOW);
         }
@@ -344,26 +477,28 @@ void checkPixy() {
       //  Lost signal
       else
       {
-         Serial.println(" stop");
+         debug(" stop");
          state = 5;
          digitalWrite(l0,LOW);
          digitalWrite(l1,LOW);
-         digitalWrite(c0,HIGH);
          digitalWrite(r0,LOW);
          digitalWrite(r1,LOW);
+
+         numberOfFramesSinceLastLightRingColorChange++;
       }
     }
 
     // Lost block count - check to see if we need to shut down
+    
     else {
       framesWithMoreThanTwoBlocksOrLessThanOneBlock++;
-      Serial.println("***");
+      numberOfFramesSinceLastLightRingColorChange++;
+      debug("***");
       if (framesWithMoreThanTwoBlocksOrLessThanOneBlock > 5) {
-        //Serial.println("Lost lock");
+        //debug("Lost lock");
         state = 5;
         digitalWrite(l0,LOW);
         digitalWrite(l1,LOW);
-        digitalWrite(c0,LOW);
         digitalWrite(r0,LOW);
         digitalWrite(r1,LOW);
       }
@@ -399,9 +534,17 @@ void forward() {
 }
 
 // Light up all one colour
-void solid(byte red, byte green, byte blue) {
-  for (int i = 0; i < 15; i = i + 1) {
-    strip.setPixelColor(i, red, green, blue);
+void solid(byte red, byte green, byte blue, int target) {
+  if (target == LIGHT_STRIPS) {
+    for (int i = 0; i < 15; i = i + 1) {
+      strip.setPixelColor(i, red, green, blue);
+    }
+  }
+  
+  if (target == LIGHT_RING) {
+    for (int i = 0; i < LIGHT_RING_LEDS; i = i + 1) {
+      lightRing.setPixelColor(i, red, green, blue);
+    }
   }
 }
 
@@ -440,7 +583,11 @@ void left() {
 }
 
 // Front LEDs
-void frontLEDs(byte red, byte green, byte blue) {
+void frontLEDs(byte red, byte green, byte blue) {  
+  for (int i = 15; i < 29; i++) {
+    strip.setPixelColor(i, red / 8, green / 8, blue / 8);
+  }
+  
   for (int i = 0; i < 3; i++) {
     frontLED[i] += frontLEDDirection[i];
     if (frontLED[i] == 28) frontLEDDirection[i] = -1;
@@ -454,12 +601,60 @@ void frontLEDs(byte red, byte green, byte blue) {
 
 // Party Mode
 void party() {
+
   for (int i = 0; i < 29; i = i + 1) {
-    strip.setPixelColor(i, random(255), random(255), random(255));
+    int red = random(255);
+    int green = random(255);
+    int blue = random(255);
+
+    int black = random(3);
+    if (black == 0) { red = 0; }
+    if (black == 1) { green = 0; }
+    if (black == 2) { blue = 0; }
+    strip.setPixelColor(i, red, green, blue);
+  }
+  
+  for (int i = 0; i < 40; i = i + 1) {
+    int red = random(128);
+    int green = random(128);
+    int blue = random(128);
+
+    int black = random(3);
+    if (black == 0) { red = 0; }
+    if (black == 1) { green = 0; }
+    if (black == 2) { blue = 0; }
+  
+    lightRing.setPixelColor(i, red, green, blue);
   }
 }
 
 
+void lightRingChangeColor() {      
+  if (lightRingState == LIGHT_RING_GREEN) {
+    // Change to blue
+    solid(0,0,255, LIGHT_RING);
+    lightRingState = LIGHT_RING_BLUE;
+  }
 
+  else {
+    // Change to green
+    solid(0,255,0, LIGHT_RING);
+    lightRingState = LIGHT_RING_GREEN;
+  }
+}
+
+
+// ------------------------------------------------------------------------------
+
+void debug(String out) {
+  if (debugOutput) {
+    Serial.println(out);
+  }
+}
+void debug(int out) {
+  if (debugOutput) {
+    Serial.println(out);
+  }
+}
 
 
