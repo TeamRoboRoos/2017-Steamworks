@@ -109,6 +109,9 @@ public class RobotMap {
 		
 		compressor = new Compressor(Config.PCM_CAN_PORT);
 
+		Compressor = new Compressor(Config.PCM_CAN_PORT);
+		LiveWindow.addActuator("Pneumatics", "Compressor", Compressor);
+
 		telemeteryPressure = new AnalogInput(Config.ANI_PRESSURE);
 		LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);
 

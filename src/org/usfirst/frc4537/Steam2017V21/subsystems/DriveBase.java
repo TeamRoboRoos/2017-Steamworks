@@ -167,4 +167,8 @@ public class DriveBase extends Subsystem {
 	public void halfSpeedSet(boolean value) {
 		speedHalved = value;
 	}
+	
+	/*public void initialise () {
+		this.CANTalonLeft2.setControlMode(5);
+	}*/
 }
