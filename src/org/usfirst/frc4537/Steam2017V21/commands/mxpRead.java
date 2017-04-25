@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
+import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 /**
@@ -47,6 +48,8 @@ public class mxpRead extends Command {
     	}
 
     	SmartDashboard.putNumber("MXPValue", binary);
+    	SmartDashboard.putString("MXPString", MXP.convertMXP(binary));
+    	Functions.debug(MXP.convertMXP(binary)+" "+binary);
     	//System.out.println(MXP.readPin(RobotMap.mxpI1)+" "+MXP.readPin(RobotMap.mxpI2)+" "+MXP.readPin(RobotMap.mxpI4)+" "+MXP.readPin(RobotMap.mxpI8));
     	MXP.mxpValue = binary;
     }

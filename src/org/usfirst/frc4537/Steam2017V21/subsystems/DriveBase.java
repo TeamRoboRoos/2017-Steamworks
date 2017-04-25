@@ -141,7 +141,7 @@ public class DriveBase extends Subsystem {
 		rightSpeed = Math.max(rightSpeed, -1);
 		rightSpeed = Math.min(rightSpeed, 1);
 		
-		System.out.println("LeftSpeed: " + leftSpeed + " RightSpeed: " + rightSpeed);
+		//System.out.println("LeftSpeed: " + leftSpeed + " RightSpeed: " + rightSpeed);
 
 		//For all that is good in this world, DO NOT touch or breathe on these
 		//the speed controllers must have the same amount otherwise it will die 

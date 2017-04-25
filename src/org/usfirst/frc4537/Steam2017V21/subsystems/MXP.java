@@ -14,7 +14,9 @@ public class MXP extends Subsystem {
 	public static DigitalOutput mxpOBlue = RobotMap.mxpOWhite;
 	public static DigitalOutput mxpORed = RobotMap.mxpOBlack;
 	public static int mxpValue = 0;
-    
+	public static boolean ringColour = false;
+	public static boolean ringMode = false;
+
 	public void initDefaultCommand() {
     	// Set the default command for a subsystem here.
     	// setDefaultCommand(new MySpecialCommand());
@@ -34,11 +36,45 @@ public class MXP extends Subsystem {
 		}
 	}*/
 	
+	/**
+	 * 
+	 * @param pin Pin to read
+	 * @return Pin state
+	 */
 	public static boolean readPin(DigitalInput pin) {
 		return pin.get();
 	}
 	
+	/**
+	 * 
+	 * @param pin Pin to set
+	 * @param output Output state
+	 */
 	public static void setPin(DigitalOutput pin, boolean output) {
 		pin.set(output);
+	}
+	
+	/**
+	 * 
+	 * @param i Arduino Input
+	 * @return String Name
+	 */
+	public static String convertMXP(int i) {
+		String value = "DEFAULT";
+		
+		switch (i) {
+		case (3):	value = "HARD_RIGHT";	break;
+		case (2):	value = "MED_RIGHT";	break;
+		case (1):	value = "SMALL_RIGHT";	break;
+		case (12):	value = "HARD_LEFT";	break;
+		case (8):	value = "MED_LEFT";		break;
+		case (4):	value = "SMALL_LEFT";	break;
+		case (10):	value = "FWD";			break;
+		case (15):	value = "STOP";			break;
+		case (0):	value = "NS";			break;
+		default:	value = "ERROR";		break;
+		}
+		
+		return value;
 	}
 }

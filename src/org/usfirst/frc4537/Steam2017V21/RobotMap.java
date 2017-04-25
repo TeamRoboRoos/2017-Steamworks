@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * floating around.
  */
 public class RobotMap {
-	public static Compressor Compressor;
+	public static Compressor compressor;
 	public static Solenoid rampSolenoid;
 	public static Solenoid flippersSolenoid;
 	public static ADXRS450_Gyro telemeteryGyro;
@@ -42,6 +42,8 @@ public class RobotMap {
 	public static DigitalInput mxpI8;
 	public static DigitalOutput mxpOWhite;
 	public static DigitalOutput mxpOBlack;
+	public static DigitalOutput mxpORL; //XXX
+	public static DigitalOutput mxpOBL; //XXX
 	public static PowerDistributionPanel telemeteryPowerDistributionPanel;
 
 	//Declare Motors
@@ -86,6 +88,12 @@ public class RobotMap {
 		
 		mxpOBlack = new DigitalOutput(Config.DGO_MXP_BLACK);
 		LiveWindow.addActuator("MXP", "Out Black", mxpOBlack);
+		
+		mxpORL = new DigitalOutput(Config.DGO_MXP_RLEAD); //XXX
+		LiveWindow.addActuator("MXP", "Out R Lead", mxpORL);
+		
+		mxpOBL = new DigitalOutput(Config.DGO_MXP_BLEAD); //XXX
+		LiveWindow.addActuator("MXP", "Out B Lead", mxpOBL);
 
 		telemeteryGyro = new ADXRS450_Gyro(Config.GYRO_PORT);
 		LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);
@@ -98,6 +106,8 @@ public class RobotMap {
 
 		flippersSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
 		LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);
+		
+		compressor = new Compressor(Config.PCM_CAN_PORT);
 
 		telemeteryPressure = new AnalogInput(Config.ANI_PRESSURE);
 		LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);

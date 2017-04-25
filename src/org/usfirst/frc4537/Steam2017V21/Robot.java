@@ -35,7 +35,8 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
-    SendableChooser autoChooser;
+    @SuppressWarnings("rawtypes") //XXX
+	SendableChooser autoChooser;
 
     public static OI oi;
     public static Camera camera;
@@ -51,7 +52,8 @@ public class Robot extends IterativeRobot {
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
-    public void robotInit() {
+    @SuppressWarnings({ "unchecked", "rawtypes" }) //XXX
+	public void robotInit() {
     	RobotMap.init();
     	pneumatics = new Pneumatics();
         camera = new Camera();
@@ -74,13 +76,20 @@ public class Robot extends IterativeRobot {
         autoChooser.addDefault("Vision Left", new AutoVision(0));
         autoChooser.addDefault("Vision Middle", new AutoVision(1));
         autoChooser.addDefault("Vision Right", new AutoVision(2));
+        autoChooser.addDefault("Middle NoVis", new AutoVision(4));
         SmartDashboard.putData("Auto Chooser", autoChooser);
-        
+
+        SmartDashboard.putData("Compressor Start", new compressorSet(1));
+        SmartDashboard.putData("Compressor Stop", new compressorSet(0));
+        //SmartDashboard.putData("Compressor Toggle", new compressorSet(2));
+
         //Initialize camera capture servers
         for (int i = 0; i <= Config.CAM_NAMES.length-1; i++) {
         	UsbCamera camObj = CameraServer.getInstance().startAutomaticCapture(Config.CAM_NAMES[i], Config.CAM_PATHS[i]);
         	camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
         	camObj.setFPS(Config.CAM_FPS);
+        	camObj.setExposureManual(50);
+        	camObj.setWhiteBalanceManual(50);
         }
         
         //Apply calibration to pressure sensor

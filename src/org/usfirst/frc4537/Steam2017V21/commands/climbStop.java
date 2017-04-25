@@ -37,7 +37,7 @@ public class climbStop extends Command {
     		Climber.climbStop();
     		MXP.setPin(RobotMap.mxpOBlack, false);
     	}
-    	if (!Robot.oi.buttonBoard.getRawButton(Config.BUTTON_PARTY_OFF)) {
+    	if (!Robot.oi.buttonBoard.getRawButton(Config.BUTTON_COMP_ON)) {
     		MXP.setPin(RobotMap.mxpOWhite, false);
     	}
     }

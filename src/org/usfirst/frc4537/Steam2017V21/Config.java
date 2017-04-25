@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 
 public class Config {
+	//Debug
+	public static final boolean DEBUG = true;
+
 	//Drive joystick and axis 
 	public static final int JOYSTICK_DRIVE = 0;
 	public static final int AXIS_X = 0;
@@ -27,16 +30,14 @@ public class Config {
 	//Button board and axis
 	public static final int BUTTON_BOARD = 1;
 	//Button board buttons
-	public static final int BUTTON_CLIMB_UP = 3;
-	public static final int BUTTON_CLIMB_RESET = 2;
-	public static final int BUTTON_RAMP_TOGGLE = 4;
-	public static final int BUTTON_FLIPPERS_TOGGLE = 1;
-	public static final int BUTTON_PARTY_OFF = 8;
-	/*public static final int BUTTON_CLIMB_UP = 1;
-	public static final int BUTTON_CLIMB_RESET = 2;
-	public static final int BUTTON_RAMP_TOGGLE = 3;
-	public static final int BUTTON_FLIPPERS_TOGGLE = 4;
-	public static final int BUTTON_PARTY_OFF = 5;*/
+	public static final int BUTTON_CLIMB_UP = 3; //Square
+	public static final int BUTTON_CLIMB_RESET = 2; //Circle
+	public static final int BUTTON_RAMP_TOGGLE = 4; //Triangle
+	public static final int BUTTON_FLIPPERS_TOGGLE = 1; //X
+	public static final int BUTTON_COMP_ON = 8; //Options
+	public static final int BUTTON_COMP_OFF = 7; //Share
+	public static final int BUTTON_RING_COLOUR_TOGGLE = 6; //L1
+	public static final int BUTTON_RING_MODE_TOGGLE = 5; //R1
 
 	//Motor IDs
 	public static final int MOTOR_DL_1 = 1;
@@ -75,17 +76,17 @@ public class Config {
 	//Camera server variables
 	public static final String[] CAM_NAMES = {"Climber", "Gear"};
 	public static final String[] CAM_PATHS = {"/dev/video0", "/dev/video1"};
-	public static final int[] CAM_RESOLUTION = {320, 240}; //{Width, Height}
-	public static final int CAM_FPS = 10;
+	public static final int[] CAM_RESOLUTION = {160, 120}; //{Width, Height}
+	public static final int CAM_FPS = 30;
 	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
 	public static final Accelerometer.Range ACCELEROMETER_RANGE = Accelerometer.Range.k4G;
 
-	//Analog Sensors
+	//Analog Sensor Ports
 	public static final int ANI_PRESSURE = 0;
 	
-	//Digital Sensors
+	//Digital Sensor Ports
 	//Climber Limit Switch
 	public static final int DGI_CLIMBER_SWITCH = 0;
 	//MXP IO
@@ -95,13 +96,10 @@ public class Config {
 	public static final int DGI_MXP_8 = 15;		//MPX PIN 21 IN		//Red
 	public static final int DGO_MXP_WHITE = 11;	//MPX PIN 13 OUT	//White
 	public static final int DGO_MXP_BLACK = 10;	//MPX PIN 11 OUT	//Black
+	public static final int DGO_MXP_RLEAD = 18;	//MXP PIN 25 OUT	//Red Lead
+	public static final int DGO_MXP_BLEAD = 17;	//MXP PIN 27 OUT	//Black Lead
 	
 	//Calibration
 	//Pressure 
-	public static final double[][] CAL_PRESSURE 
-	= {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
-	
-	/**
-	 * 
-	 */
+	public static final double[][] CAL_PRESSURE = {{0, 410.38}, {25, 814.744}, {50, 1206.064}, {75, 1606.08}, {100, 2012.1832}};
 }

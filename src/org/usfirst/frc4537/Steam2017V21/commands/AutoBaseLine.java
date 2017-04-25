@@ -51,7 +51,7 @@ public class AutoBaseLine extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		System.out.println("State: " + state);
+		//System.out.println("State: " + state);
 		
 		encDistAvg = ((Telemetery.getEncL() + Telemetery.getEncR())/2);
 		gyroAngle = Telemetery.gyroGetAngle();

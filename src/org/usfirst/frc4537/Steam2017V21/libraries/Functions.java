@@ -1,5 +1,7 @@
 package org.usfirst.frc4537.Steam2017V21.libraries;
 
+import org.usfirst.frc4537.Steam2017V21.Config;
+
 public class Functions {
 
 	/**
@@ -77,5 +79,15 @@ public class Functions {
 
 		double[] returner = {grad, icpt};
 		return returner;
+	}
+
+	/**
+	 * Outputs to the console when debug config is <i>true</i>
+	 * @param value Message to print
+	 */
+	public static void debug(String value) {
+		if (Config.DEBUG) {
+			System.out.println(value);
+		}
 	}
 }

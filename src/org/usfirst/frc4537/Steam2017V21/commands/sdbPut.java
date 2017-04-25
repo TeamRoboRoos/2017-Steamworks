@@ -61,9 +61,17 @@ public class sdbPut extends Command {
     	SmartDashboard.putBoolean("Flippers", flippersValue);
         SmartDashboard.putNumber("Climber Current", climberCurrent);
         SmartDashboard.putNumber("Drive Current", driveCurrent);
+        SmartDashboard.putBoolean("Compressor", Pneumatics.compressorGetMode());
         //System.out.println("Distance: " + ((Telemetery.getEncL() + Telemetery.getEncR())/2) + "m");
-        System.out.println(Telemetery.pressureGet());
+        //System.out.println(Telemetery.pressureGet());
         //Telemetery.telemeteryDebug();
+        
+        if (!Pneumatics.compressorGetMode()) {
+        	System.out.println("WARNING Compressor not enabled");
+        }
+        if (pressure < 60) {
+        		System.out.println("ERROR Pressure Low: "+Functions.floor(pressure)+" psi");
+        }
     }
 
     // Make this return true when this Command no longer needs to run execute()
