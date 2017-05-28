@@ -11,6 +11,8 @@
 
 package org.usfirst.frc4537.Steam2017V21;
 import com.ctre.CANTalon;
+import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -59,13 +61,6 @@ public class RobotMap {
 	public static CANTalon leftEncoder;
 	public static CANTalon rightEncoder;
 
-	//Motor IDs
-	private static final int MOTOR_DL_1 = Config.MOTOR_DL_1;
-	private static final int MOTOR_DL_2 = Config.MOTOR_DL_2;
-	private static final int MOTOR_DL_3 = Config.MOTOR_DL_3;
-	private static final int MOTOR_DR_4 = Config.MOTOR_DR_4;
-	private static final int MOTOR_DR_5 = Config.MOTOR_DR_5;
-	private static final int MOTOR_DR_6 = Config.MOTOR_DR_6;
 
 	public static void init() {
 		climberLimitSwitch = new DigitalInput(Config.DGI_CLIMBER_SWITCH);
@@ -108,9 +103,7 @@ public class RobotMap {
 		LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);
 		
 		compressor = new Compressor(Config.PCM_CAN_PORT);
-
-		Compressor = new Compressor(Config.PCM_CAN_PORT);
-		LiveWindow.addActuator("Pneumatics", "Compressor", Compressor);
+		LiveWindow.addActuator("Pneumatics", "Compressor", compressor);
 
 		telemeteryPressure = new AnalogInput(Config.ANI_PRESSURE);
 		LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);
@@ -120,33 +113,47 @@ public class RobotMap {
 
 		//Instatniating the motors
 		//left motors
-		RobotMap.dlMotor1 = new CANTalon(MOTOR_DL_1);
-		RobotMap.dlMotor1.setExpiration(0.1);
-		RobotMap.dlMotor1.setInverted(true);
-		LiveWindow.addActuator("DriveBase", "Drive Left Motor 1", dlMotor1);
+		dlMotor1 = new CANTalon(Config.MOTOR_DL_1);
+		//dlMotor1.changeControlMode(TalonControlMode.PercentVbus);
+		dlMotor1.set(0.0);
+		dlMotor1.setExpiration(0.1);
+		dlMotor1.setInverted(true);
 
-		RobotMap.dlMotor2 = new CANTalon(MOTOR_DL_2);
-		RobotMap.dlMotor2.setExpiration(0.1);
-		RobotMap.dlMotor2.setInverted(true);
-		LiveWindow.addActuator("DriveBase", "Drive Left Motor 2", dlMotor2);
+		dlMotor2 = new CANTalon(Config.MOTOR_DL_2);
+		dlMotor2.changeControlMode(TalonControlMode.Follower);
+		dlMotor2.set(dlMotor1.getDeviceID());
+		dlMotor2.setExpiration(0.1);
+		//dlMotor2.setInverted(true);
 
-		RobotMap.dlMotor3 = new CANTalon(MOTOR_DL_3);
-		RobotMap.dlMotor3.setExpiration(0.1);
-		RobotMap.dlMotor3.setInverted(true);
-		LiveWindow.addActuator("DriveBase", "Drive Left Motor 3", dlMotor3);
+		dlMotor3 = new CANTalon(Config.MOTOR_DL_3);
+		dlMotor3.changeControlMode(TalonControlMode.Follower);
+		dlMotor3.set(dlMotor1.getDeviceID());
+		dlMotor3.setExpiration(0.1);
+		//dlMotor3.setInverted(true);
 
 		//Right motors
-		RobotMap.drMotor4 = new CANTalon(MOTOR_DR_4);
-		RobotMap.drMotor4.setExpiration(0.1);
+		drMotor4 = new CANTalon(Config.MOTOR_DR_4);
+		//drMotor4.changeControlMode(TalonControlMode.PercentVbus);
+		drMotor4.set(0.0);
+		drMotor4.setExpiration(0.1);
+
+		drMotor5 = new CANTalon(Config.MOTOR_DR_5);
+		drMotor5.changeControlMode(TalonControlMode.Follower);
+		drMotor5.set(drMotor4.getDeviceID());
+		drMotor5.setExpiration(0.1);
+
+		drMotor6 = new CANTalon(Config.MOTOR_DR_6);
+		drMotor6.changeControlMode(TalonControlMode.Follower);
+		drMotor6.set(drMotor4.getDeviceID());
+		drMotor6.setExpiration(0.1);
+		
+		
+		LiveWindow.addActuator("DriveBase", "Drive Left Motor 1", dlMotor1);
+		//LiveWindow.addActuator("DriveBase", "Drive Left Motor 2", dlMotor2);
+		//LiveWindow.addActuator("DriveBase", "Drive Left Motor 3", dlMotor3);
 		LiveWindow.addActuator("DriveBase", "Drive Right Motor 4", drMotor4);
-
-		RobotMap.drMotor5 = new CANTalon(MOTOR_DR_5);
-		RobotMap.drMotor5.setExpiration(0.1);
-		LiveWindow.addActuator("DriveBase", "Drive Right Motor 5", drMotor5);
-
-		RobotMap.drMotor6 = new CANTalon(MOTOR_DR_6);
-		RobotMap.drMotor6.setExpiration(0.1);
-		LiveWindow.addActuator("DriveBase", "Drive Right Motor 6", drMotor6);
+		//LiveWindow.addActuator("DriveBase", "Drive Right Motor 5", drMotor5);
+		//LiveWindow.addActuator("DriveBase", "Drive Right Motor 6", drMotor6);
 
 		//Climber motors
 		RobotMap.climbMotor1 = new CANTalon(Config.CLIMB_MOTOR_1);

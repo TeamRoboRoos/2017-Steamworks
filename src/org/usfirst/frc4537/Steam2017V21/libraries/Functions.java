@@ -41,7 +41,7 @@ public class Functions {
 	 * @return Calibrated encoder reading
 	 */
 	public static double encoder(double encoderReading) {
-		return (encoderReading / 12268);
+		return (encoderReading / 12288); //was 12268 prior to reading the manual...
 	}
 
 	/**

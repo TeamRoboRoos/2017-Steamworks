@@ -34,116 +34,117 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
  */
 public class Robot extends IterativeRobot {
 
-    Command autonomousCommand;
-    @SuppressWarnings("rawtypes") //XXX
+	Command autonomousCommand;
+	@SuppressWarnings("rawtypes") //XXX
 	SendableChooser autoChooser;
 
-    public static OI oi;
-    public static Camera camera;
-    public static Climber climber;
-    public static DriveBase driveBase;
-    public static Pickup pickup;
-    public static Telemetery telemetery;
-    public static Vision vision;
-    public static Pneumatics pneumatics;
-    public static MXP mxp;
+	public static OI oi;
+	public static Camera camera;
+	public static Climber climber;
+	public static DriveBase driveBase;
+	public static Pickup pickup;
+	public static Telemetery telemetery;
+	public static Vision vision;
+	public static Pneumatics pneumatics;
+	public static MXP mxp;
 
-    /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" }) //XXX
+	/**
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" }) //XXX
 	public void robotInit() {
-    	RobotMap.init();
-    	pneumatics = new Pneumatics();
-        camera = new Camera();
-        climber = new Climber();
-        driveBase = new DriveBase();
-        pickup = new Pickup();
-        telemetery = new Telemetery();
-        vision = new Vision();
-        mxp = new MXP();
+		RobotMap.init();
+		pneumatics = new Pneumatics();
+		camera = new Camera();
+		climber = new Climber();
+		driveBase = new DriveBase();
+		pickup = new Pickup();
+		telemetery = new Telemetery();
+		vision = new Vision();
+		mxp = new MXP();
 
-        // OI must be constructed after subsystems. If the OI creates Commands
-        //(which it very likely will), subsystems are not guaranteed to be
-        // constructed yet. Thus, their requires() statements may grab null
-        // pointers. Bad news. Don't move it.
-        oi = new OI();
-        
-        //Setup auto chooser
-        autoChooser = new SendableChooser();
-        autoChooser.addDefault("Base Line", new AutoBaseLine());
-        autoChooser.addDefault("Vision Left", new AutoVision(0));
-        autoChooser.addDefault("Vision Middle", new AutoVision(1));
-        autoChooser.addDefault("Vision Right", new AutoVision(2));
-        autoChooser.addDefault("Middle NoVis", new AutoVision(4));
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+		// OI must be constructed after subsystems. If the OI creates Commands
+		//(which it very likely will), subsystems are not guaranteed to be
+		// constructed yet. Thus, their requires() statements may grab null
+		// pointers. Bad news. Don't move it.
+		oi = new OI();
 
-        SmartDashboard.putData("Compressor Start", new compressorSet(1));
-        SmartDashboard.putData("Compressor Stop", new compressorSet(0));
-        //SmartDashboard.putData("Compressor Toggle", new compressorSet(2));
+		//Setup auto chooser
+		autoChooser = new SendableChooser();
+		autoChooser.addDefault("Base Line", new AutoBaseLine());
+		autoChooser.addObject("Vision Left", new AutoVision(0));
+		autoChooser.addObject("Vision Middle", new AutoVision(1));
+		autoChooser.addObject("Vision Right", new AutoVision(2));
+		autoChooser.addObject("Middle NoVis", new AutoVision(4));
+		autoChooser.addObject("EXPERIMENTAL: PATH", new AutoPath());
+		SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        //Initialize camera capture servers
-        for (int i = 0; i <= Config.CAM_NAMES.length-1; i++) {
-        	UsbCamera camObj = CameraServer.getInstance().startAutomaticCapture(Config.CAM_NAMES[i], Config.CAM_PATHS[i]);
-        	camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
-        	camObj.setFPS(Config.CAM_FPS);
-        	camObj.setExposureManual(50);
-        	camObj.setWhiteBalanceManual(50);
-        }
-        
-        //Apply calibration to pressure sensor
-        Telemetery.pressureCal = Functions.statreg(Config.CAL_PRESSURE);
+		SmartDashboard.putData("Compressor Start", new compressorSet(1));
+		SmartDashboard.putData("Compressor Stop", new compressorSet(0));
+		//SmartDashboard.putData("Compressor Toggle", new compressorSet(2));
 
-        //Instantiate the command used for the autonomous period
-        autonomousCommand = new AutonomousCommand();
+		//Initialize camera capture servers
+		for (int i = 0; i <= Config.CAM_NAMES.length-1; i++) {
+			UsbCamera camObj = CameraServer.getInstance().startAutomaticCapture(Config.CAM_NAMES[i], Config.CAM_PATHS[i]);
+			camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
+			camObj.setFPS(Config.CAM_FPS);
+			camObj.setExposureManual(50);
+			camObj.setWhiteBalanceManual(50);
+		}
 
-    }
+		//Apply calibration to pressure sensor
+		Telemetery.pressureCal = Functions.statreg(Config.CAL_PRESSURE);
 
-    /**
-     * This function is called when the disabled button is hit.
-     * You can use it to reset subsystems before shutting down.
-     */
-    public void disabledInit(){
+		//Instantiate the command used for the autonomous period
+		//autonomousCommand = new AutonomousCommand();
 
-    }
+	}
 
-    public void disabledPeriodic() {
-        Scheduler.getInstance().run();
-    }
+	/**
+	 * This function is called when the disabled button is hit.
+	 * You can use it to reset subsystems before shutting down.
+	 */
+	public void disabledInit(){
 
-    public void autonomousInit() {
-        // schedule the autonomous command (example)
-        autonomousCommand = (Command) autoChooser.getSelected();
-    	if (autonomousCommand != null) autonomousCommand.start();
-    }
+	}
 
-    /**
-     * This function is called periodically during autonomous
-     */
-    public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
-    }
+	public void disabledPeriodic() {
+		Scheduler.getInstance().run();
+	}
 
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (autonomousCommand != null) autonomousCommand.cancel();
-    }
+	public void autonomousInit() {
+		// schedule the autonomous command (example)
+		autonomousCommand = (Command) autoChooser.getSelected();
+		if (autonomousCommand != null) autonomousCommand.start();
+	}
 
-    /**
-     * This function is called periodically during operator control
-     */
-    public void teleopPeriodic() {
-        Scheduler.getInstance().run();
-    }
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	public void autonomousPeriodic() {
+		Scheduler.getInstance().run();
+	}
 
-    /**
-     * This function is called periodically during test mode
-     */
-    public void testPeriodic() {
-        LiveWindow.run();
-    }
+	public void teleopInit() {
+		// This makes sure that the autonomous stops running when
+		// teleop starts running. If you want the autonomous to
+		// continue until interrupted by another command, remove
+		// this line or comment it out.
+		if (autonomousCommand != null) autonomousCommand.cancel();
+	}
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	public void teleopPeriodic() {
+		Scheduler.getInstance().run();
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	public void testPeriodic() {
+		LiveWindow.run();
+	}
 }

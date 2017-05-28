@@ -51,6 +51,7 @@ public class AutoVision extends Command {
 	final double DRIVE_DISTANCE = 1.85;
 
 	public AutoVision(int param) {
+		requires(Robot.driveBase);
 		side = param;
 	}
 
@@ -204,5 +205,6 @@ public class AutoVision extends Command {
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
+		end();
 	}
 }

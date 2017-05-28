@@ -27,11 +27,11 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class DriveBase extends Subsystem {
 	private final CANTalon CANTalonLeft1 = RobotMap.dlMotor1;
-	private final CANTalon CANTalonLeft2 = RobotMap.dlMotor2;
-	private final CANTalon CANTalonLeft3 = RobotMap.dlMotor3;
+	//private final CANTalon CANTalonLeft2 = RobotMap.dlMotor2;
+	//private final CANTalon CANTalonLeft3 = RobotMap.dlMotor3;
 	private final CANTalon CANTalonRight4 = RobotMap.drMotor4;
-	private final CANTalon CANTalonRight5 = RobotMap.drMotor5;
-	private final CANTalon CANTalonRight6 = RobotMap.drMotor6;
+	//private final CANTalon CANTalonRight5 = RobotMap.drMotor5;
+	//private final CANTalon CANTalonRight6 = RobotMap.drMotor6;
 
 	private PID movePID;
 	private PID turnPID;
@@ -147,13 +147,13 @@ public class DriveBase extends Subsystem {
 		//the speed controllers must have the same amount otherwise it will die 
 		//Left side
 		this.CANTalonLeft1.set(leftSpeed);
-		this.CANTalonLeft2.set(leftSpeed);
-		this.CANTalonLeft3.set(leftSpeed);
+		//this.CANTalonLeft2.set(leftSpeed);
+		//this.CANTalonLeft3.set(leftSpeed);
 
 		//Right Side
 		this.CANTalonRight4.set(rightSpeed);
-		this.CANTalonRight5.set(rightSpeed);
-		this.CANTalonRight6.set(rightSpeed);
+		//this.CANTalonRight5.set(rightSpeed);
+		//this.CANTalonRight6.set(rightSpeed);
 
 		//Calculate robot drive power draw
 		//leftCurrent = pdp.getCurrent(0) + pdp.getCurrent(1) + pdp.getCurrent(2);
@@ -167,8 +167,4 @@ public class DriveBase extends Subsystem {
 	public void halfSpeedSet(boolean value) {
 		speedHalved = value;
 	}
-	
-	/*public void initialise () {
-		this.CANTalonLeft2.setControlMode(5);
-	}*/
 }
