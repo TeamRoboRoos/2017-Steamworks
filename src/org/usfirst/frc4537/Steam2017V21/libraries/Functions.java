@@ -86,7 +86,7 @@ public class Functions {
 	 * @param value Message to print
 	 */
 	public static void debug(String value) {
-		if (Config.DEBUG) {
+		if (Config.ENABLE_DEBUG) {
 			System.out.println(value);
 		}
 	}

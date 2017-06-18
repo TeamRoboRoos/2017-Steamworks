@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.SerialPort;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -60,6 +61,9 @@ public class RobotMap {
 	//Declare encoders
 	public static CANTalon leftEncoder;
 	public static CANTalon rightEncoder;
+	
+	//Declare Serial Ports
+	public static SerialPort arduino;
 
 
 	public static void init() {
@@ -169,5 +173,8 @@ public class RobotMap {
 		LiveWindow.addSensor("Encoder", "Left Encoder", leftEncoder);
 		RobotMap.rightEncoder = RobotMap.drMotor4;
 		LiveWindow.addSensor("Encoder", "Right Encoder", rightEncoder);
+		
+		//Serial Port
+		RobotMap.arduino = new SerialPort(Config.ARD_BAUDR, Config.ARD_PORT);
 	}
 }

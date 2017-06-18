@@ -33,6 +33,7 @@ public class sdbPut extends Command {
 	private boolean flippersValue = false;
 	private double climberCurrent = 0.0;
 	private double driveCurrent = 0.0;
+	private String s,ls;
 
     public sdbPut() {
     	requires(Robot.telemetery);
@@ -62,6 +63,15 @@ public class sdbPut extends Command {
         SmartDashboard.putNumber("Climber Current", climberCurrent);
         SmartDashboard.putNumber("Drive Current", driveCurrent);
         SmartDashboard.putBoolean("Compressor", Pneumatics.compressorGetMode());
+        if (SmartDashboard.getBoolean("ard_push", false)){
+        	s = SmartDashboard.getString("ard_data", null);
+        	if(ls != s){
+        		MXP.sendSerial(s);
+            	SmartDashboard.putString("ard_value", s);
+            	ls = s;
+        	}
+        	//SmartDashboard.putBoolean("ard_push", false);
+        }
         //System.out.println("Distance: " + ((Telemetery.getEncL() + Telemetery.getEncR())/2) + "m");
         //System.out.println(Telemetery.pressureGet());
         //Telemetery.telemeteryDebug();

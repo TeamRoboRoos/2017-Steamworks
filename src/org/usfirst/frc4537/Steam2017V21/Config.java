@@ -1,11 +1,12 @@
 package org.usfirst.frc4537.Steam2017V21;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 
 public class Config {
 	//Debug
-	public static final boolean DEBUG = true;
+	public static final boolean ENABLE_DEBUG = true;
 
 	//Drive joystick and axis 
 	public static final int JOYSTICK_DRIVE = 0;
@@ -98,6 +99,16 @@ public class Config {
 	public static final int DGO_MXP_BLACK = 10;	//MPX PIN 11 OUT	//Black
 	public static final int DGO_MXP_RLEAD = 18;	//MXP PIN 25 OUT	//Red Lead
 	public static final int DGO_MXP_BLEAD = 17;	//MXP PIN 27 OUT	//Black Lead
+	
+	//Serial Configuration
+	public static final SerialPort.Port ARD_PORT = SerialPort.Port.kMXP;
+	public static final int ARD_BAUDR = 9600;
+	
+	//File Operations
+	public static final boolean ENABLE_FILE_IO = false;
+	public static final String USB_PATH = "/U/RIOFILES/";
+	public static final String LOCAL_PATH = "/home/lvuser/RIOFILES";
+	public static final String CONFIG_FILE = "Config.ini";
 	
 	//Calibration
 	//Pressure 

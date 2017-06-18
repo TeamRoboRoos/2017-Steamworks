@@ -4,6 +4,7 @@ import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class MXP extends Subsystem {
@@ -13,6 +14,7 @@ public class MXP extends Subsystem {
 	public static DigitalInput mxpIYellow = RobotMap.mxpI8;
 	public static DigitalOutput mxpOBlue = RobotMap.mxpOWhite;
 	public static DigitalOutput mxpORed = RobotMap.mxpOBlack;
+	public static SerialPort arduino = RobotMap.arduino;
 	public static int mxpValue = 0;
 	public static boolean ringColour = false;
 	public static boolean ringMode = false;
@@ -76,5 +78,9 @@ public class MXP extends Subsystem {
 		}
 		
 		return value;
+	}
+	
+	public static void sendSerial(String data){
+		arduino.writeString('~'+data);
 	}
 }
