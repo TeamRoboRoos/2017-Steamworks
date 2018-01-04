@@ -12,18 +12,20 @@
 package org.usfirst.frc4537.Steam2017V21.commands;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc4537.Steam2017V21.Config;
 import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
-import com.ctre.CANTalon;
-
 /**
  *
  */
 public class sdbPut extends Command {
+	private NetworkTable pyMirror = Telemetery.getNetTable();
 	private DigitalInput climbSensor = RobotMap.climberLimitSwitch;
 	private double pressure = 0;
 	private double lEncVal = 0;
@@ -33,68 +35,74 @@ public class sdbPut extends Command {
 	private boolean flippersValue = false;
 	private double climberCurrent = 0.0;
 	private double driveCurrent = 0.0;
-	private String s,ls;
+	private String tx,txl,rx,rxl;
 
-    public sdbPut() {
-    	requires(Robot.telemetery);
-    }
-    
-    // Called just before this Command runs the first time
-    protected void initialize() {
-    }
+	public sdbPut() {
+		requires(Robot.telemetery);
+	}
 
-    // Called repeatedly when this Command is scheduled to run
-    protected void execute() {
-    	pressure = Telemetery.pressureGet();
-    	lEncVal = Functions.encoder(Telemetery.getEncL());
-    	rEncVal = Functions.encoder(Telemetery.getEncR());
-    	//rEncVal = Telemetery.getEncR();
-    	climbValue = climbSensor.get();
-    	rampValue = Pneumatics.rampGetState();
-    	flippersValue = Pneumatics.flippersGetState();
-    	climberCurrent = Telemetery.currentGet(0)+Telemetery.currentGet(12);
-    	driveCurrent = Telemetery.currentGet(1)+Telemetery.currentGet(2)+Telemetery.currentGet(3)+Telemetery.currentGet(13)+Telemetery.currentGet(14)+Telemetery.currentGet(15);
-    	SmartDashboard.putNumber("Pressure", pressure);
-    	SmartDashboard.putNumber("LeftEncoder", lEncVal);
-    	SmartDashboard.putNumber("Right Encoder", rEncVal);
-    	SmartDashboard.putBoolean("Climber", climbValue);
-    	SmartDashboard.putBoolean("Ramp", rampValue);
-    	SmartDashboard.putBoolean("Flippers", flippersValue);
-        SmartDashboard.putNumber("Climber Current", climberCurrent);
-        SmartDashboard.putNumber("Drive Current", driveCurrent);
-        SmartDashboard.putBoolean("Compressor", Pneumatics.compressorGetMode());
-        if (SmartDashboard.getBoolean("ard_push", false)){
-        	s = SmartDashboard.getString("ard_data", null);
-        	if(ls != s){
-        		MXP.sendSerial(s);
-            	SmartDashboard.putString("ard_value", s);
-            	ls = s;
-        	}
-        	//SmartDashboard.putBoolean("ard_push", false);
-        }
-        //System.out.println("Distance: " + ((Telemetery.getEncL() + Telemetery.getEncR())/2) + "m");
-        //System.out.println(Telemetery.pressureGet());
-        //Telemetery.telemeteryDebug();
-        
-        if (!Pneumatics.compressorGetMode()) {
-        	System.out.println("WARNING Compressor not enabled");
-        }
-        if (pressure < 60) {
-        		System.out.println("ERROR Pressure Low: "+Functions.floor(pressure)+" psi");
-        }
-    }
+	// Called just before this Command runs the first time
+	protected void initialize() {
+		setRunWhenDisabled(true);
+	}
 
-    // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() {
-        return true;
-    }
+	// Called repeatedly when this Command is scheduled to run
+	protected void execute() {
+		pressure = Telemetery.pressureGet();
+		lEncVal = Functions.encoder(Telemetery.getEncL());
+		rEncVal = Functions.encoder(Telemetery.getEncR());
+		//rEncVal = Telemetery.getEncR();
+		climbValue = climbSensor.get();
+		rampValue = Pneumatics.rampGetState();
+		flippersValue = Pneumatics.flippersGetState();
+		climberCurrent = Telemetery.currentGet(0)+Telemetery.currentGet(12);
+		driveCurrent = Telemetery.currentGet(1)+Telemetery.currentGet(2)+Telemetery.currentGet(3)+Telemetery.currentGet(13)+Telemetery.currentGet(14)+Telemetery.currentGet(15);
+		SmartDashboard.putNumber("Pressure", pressure);
+		SmartDashboard.putNumber("LeftEncoder", lEncVal);
+		SmartDashboard.putNumber("Right Encoder", rEncVal);
+		SmartDashboard.putBoolean("Climber", climbValue);
+		SmartDashboard.putBoolean("Ramp", rampValue);
+		SmartDashboard.putBoolean("Flippers", flippersValue);
+		SmartDashboard.putNumber("Climber Current", climberCurrent);
+		SmartDashboard.putNumber("Drive Current", driveCurrent);
+		SmartDashboard.putBoolean("Compressor", Pneumatics.compressorGetMode());
+		
+		pyMirror.putString("str", "~00~10");
+		if (SmartDashboard.getBoolean("ard_push", false)){
+			tx = SmartDashboard.getString("ard_data", "");
+			if(!tx.equals(txl)){
+				MXP.sendSerial(tx);
+				SmartDashboard.putString("ard_value", tx);
+				txl = tx;
+			}
+		}
+		rx = MXP.readSerial();
+		if(!rx.equals(rxl) && !rx.equals("")){
+			SmartDashboard.putString("ard_return", rx);
+			rxl = rx;
+		}
 
-    // Called once after isFinished returns true
-    protected void end() {
-    }
+		if (!Config.SUPPRESS_PCM_WARNINGS){
+			if (!Pneumatics.compressorGetMode()) {
+				System.out.println("WARNING Compressor not enabled");
+			}
+			if (pressure < 60) {
+				System.out.println("ERROR Pressure Low: "+Functions.floor(pressure)+" psi");
+			}
+		}
+	}
 
-    // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
-    protected void interrupted() {
-    }
+	// Make this return true when this Command no longer needs to run execute()
+	protected boolean isFinished() {
+		return true;
+	}
+
+	// Called once after isFinished returns true
+	protected void end() {
+	}
+
+	// Called when another command which requires one or more of the same
+	// subsystems is scheduled to run
+	protected void interrupted() {
+	}
 }

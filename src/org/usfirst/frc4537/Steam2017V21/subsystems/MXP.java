@@ -80,7 +80,11 @@ public class MXP extends Subsystem {
 		return value;
 	}
 	
-	public static void sendSerial(String data){
-		arduino.writeString('~'+data);
+	public static void sendSerial(String data) {
+		arduino.writeString(data);
+	}
+	
+	public static String readSerial() {
+		return arduino.readString();
 	}
 }

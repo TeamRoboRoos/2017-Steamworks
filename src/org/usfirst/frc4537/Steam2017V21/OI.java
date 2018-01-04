@@ -12,11 +12,8 @@
 package org.usfirst.frc4537.Steam2017V21;
 
 import org.usfirst.frc4537.Steam2017V21.commands.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.*;
-import edu.wpi.first.wpilibj.command.Command;
-import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 
 
 /**

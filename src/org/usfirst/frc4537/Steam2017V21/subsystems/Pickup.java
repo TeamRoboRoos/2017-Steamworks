@@ -11,10 +11,6 @@
 
 package org.usfirst.frc4537.Steam2017V21.subsystems;
 
-import org.usfirst.frc4537.Steam2017V21.RobotMap;
-import org.usfirst.frc4537.Steam2017V21.commands.*;
-import com.ctre.CANTalon;
-
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 

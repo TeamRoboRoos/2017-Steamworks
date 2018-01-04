@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,8 +34,7 @@ import org.usfirst.frc4537.Steam2017V21.subsystems.*;
 public class Robot extends IterativeRobot {
 
 	Command autonomousCommand;
-	@SuppressWarnings("rawtypes") //XXX
-	SendableChooser autoChooser;
+	SendableChooser<Command> autoChooser;
 
 	public static OI oi;
 	public static Camera camera;
@@ -52,7 +50,6 @@ public class Robot extends IterativeRobot {
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" }) //XXX
 	public void robotInit() {
 		RobotMap.init();
 		pneumatics = new Pneumatics();
@@ -71,7 +68,7 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
 
 		//Setup auto chooser
-		autoChooser = new SendableChooser();
+		autoChooser = new SendableChooser<Command>();
 		autoChooser.addDefault("Base Line", new AutoBaseLine());
 		autoChooser.addObject("Vision Left", new AutoVision(0));
 		autoChooser.addObject("Vision Middle", new AutoVision(1));
@@ -83,14 +80,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Compressor Start", new compressorSet(1));
 		SmartDashboard.putData("Compressor Stop", new compressorSet(0));
 		//SmartDashboard.putData("Compressor Toggle", new compressorSet(2));
+		
+		SmartDashboard.putString("ard_data", "");
 
 		//Initialize camera capture servers
 		for (int i = 0; i <= Config.CAM_NAMES.length-1; i++) {
 			UsbCamera camObj = CameraServer.getInstance().startAutomaticCapture(Config.CAM_NAMES[i], Config.CAM_PATHS[i]);
 			camObj.setResolution(Config.CAM_RESOLUTION[0], Config.CAM_RESOLUTION[1]);
 			camObj.setFPS(Config.CAM_FPS);
-			camObj.setExposureManual(50);
-			camObj.setWhiteBalanceManual(50);
+			camObj.setExposureManual(Config.CAM_EX);
+			camObj.setWhiteBalanceManual(Config.CAM_WB);
 		}
 
 		//Apply calibration to pressure sensor
@@ -106,7 +105,6 @@ public class Robot extends IterativeRobot {
 	 * You can use it to reset subsystems before shutting down.
 	 */
 	public void disabledInit(){
-
 	}
 
 	public void disabledPeriodic() {

@@ -49,7 +49,7 @@ public class mxpRead extends Command {
 
     	SmartDashboard.putNumber("MXPValue", binary);
     	SmartDashboard.putString("MXPString", MXP.convertMXP(binary));
-    	Functions.debug(MXP.convertMXP(binary)+" "+binary);
+    	//Functions.debug(MXP.convertMXP(binary)+" "+binary);
     	//System.out.println(MXP.readPin(RobotMap.mxpI1)+" "+MXP.readPin(RobotMap.mxpI2)+" "+MXP.readPin(RobotMap.mxpI4)+" "+MXP.readPin(RobotMap.mxpI8));
     	MXP.mxpValue = binary;
     }

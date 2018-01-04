@@ -58,6 +58,7 @@ public class Config {
 	public static final int PDP_CAN_PORT = 0;
 
 	//Pneumatic IDs and ports
+	public static final boolean SUPPRESS_PCM_WARNINGS = true;
 	public static final int PCM_CAN_PORT = 10;
 	public static final int PCM_FLIPPER_PORT = 1;
 	public static final int PCM_RAMP_PORT = 0;
@@ -75,10 +76,12 @@ public class Config {
 	public static final double PID_TURN_S = 0.1;
 	
 	//Camera server variables
-	public static final String[] CAM_NAMES = {"Climber", "Gear"};
+	public static final String[] CAM_NAMES = {"Climber"};//{"Climber", "Gear"};
 	public static final String[] CAM_PATHS = {"/dev/video0", "/dev/video1"};
 	public static final int[] CAM_RESOLUTION = {160, 120}; //{Width, Height}
 	public static final int CAM_FPS = 30;
+	public static final int CAM_EX = 50;
+	public static final int CAM_WB = 50;
 	
 	//Gyro and accelerometer variables
 	public static final SPI.Port GYRO_PORT = SPI.Port.kOnboardCS0;
@@ -104,11 +107,13 @@ public class Config {
 	public static final SerialPort.Port ARD_PORT = SerialPort.Port.kMXP;
 	public static final int ARD_BAUDR = 9600;
 	
+	//Smart Dashboard
+	public static final String TABLE_PATH = "PythonListener";
+
 	//File Operations
-	public static final boolean ENABLE_FILE_IO = false;
-	public static final String USB_PATH = "/U/RIOFILES/";
-	public static final String LOCAL_PATH = "/home/lvuser/RIOFILES";
-	public static final String CONFIG_FILE = "Config.ini";
+	public static final boolean ENABLE_CONFIG_FILE = false;
+	public static final boolean ENABLE_LOGGING = true;
+	public static final String LOG_PATH = "/home/lvuser/UserFiles/Logs";
 	
 	//Calibration
 	//Pressure 

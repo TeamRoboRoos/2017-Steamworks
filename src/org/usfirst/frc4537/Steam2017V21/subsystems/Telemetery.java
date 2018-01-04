@@ -11,6 +11,7 @@
 
 package org.usfirst.frc4537.Steam2017V21.subsystems;
 
+import org.usfirst.frc4537.Steam2017V21.Config;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
@@ -22,12 +23,14 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 
 /**
  *
  */
 public class Telemetery extends Subsystem {
+	private static final NetworkTable pyMirror = NetworkTable.getTable(Config.TABLE_PATH);
 	private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
 	private static final AnalogInput pressure = RobotMap.telemeteryPressure;
 	private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
@@ -67,6 +70,10 @@ public class Telemetery extends Subsystem {
 
 	public static double getEncR() {
 		return Functions.encoder(renc.getEncPosition());
+	}
+
+	public static NetworkTable getNetTable() {
+		return pyMirror;
 	}
 
 	public static void telemeteryDebug() {
