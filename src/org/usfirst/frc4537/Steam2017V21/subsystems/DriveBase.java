@@ -17,7 +17,10 @@ import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import org.usfirst.frc4537.Steam2017V21.libraries.PID;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motion.SetValueMotionProfile;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -26,15 +29,15 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class DriveBase extends Subsystem {
-	private final CANTalon CANTalonLeft1 = RobotMap.dlMotor1;
+	private final TalonSRX TalonSRXLeft1 = RobotMap.dlMotor1;
 	//private final CANTalon CANTalonLeft2 = RobotMap.dlMotor2;
 	//private final CANTalon CANTalonLeft3 = RobotMap.dlMotor3;
-	private final CANTalon CANTalonRight4 = RobotMap.drMotor4;
+	private final TalonSRX TalonSRXRight4 = RobotMap.drMotor4;
 	//private final CANTalon CANTalonRight5 = RobotMap.drMotor5;
 	//private final CANTalon CANTalonRight6 = RobotMap.drMotor6;
 
-	private PID movePID;
-	private PID turnPID;
+//	private PID movePID;
+//	private PID turnPID;
 	private double previousMV = 0;
 	private double previousRV = 0;
 
@@ -53,8 +56,8 @@ public class DriveBase extends Subsystem {
 	// here. Call these from Commands.
 
 	public DriveBase() {
-		movePID = new PID(Config.PID_MOVE_P, Config.PID_MOVE_I, Config.PID_MOVE_D, Config.PID_MOVE_S);
-		turnPID = new PID(Config.PID_TURN_P, Config.PID_TURN_I, Config.PID_TURN_D, Config.PID_TURN_S);
+//		movePID = new PID(Config.PID_MOVE_P, Config.PID_MOVE_I, Config.PID_MOVE_D, Config.PID_MOVE_S);
+//		turnPID = new PID(Config.PID_TURN_P, Config.PID_TURN_I, Config.PID_TURN_D, Config.PID_TURN_S);
 	}
 
 	public void initDefaultCommand() {
@@ -101,12 +104,12 @@ public class DriveBase extends Subsystem {
 		rotateValue = Math.abs(rotateValue) * rotateSign;
 
 		//Use a PID for acceleration control
-		movePID.setTarget(moveValue);
-		moveValue = movePID.calculate(previousMV);
+//		movePID.setTarget(moveValue);
+//		moveValue = movePID.calculate(previousMV);
 		previousMV = moveValue;
 		
-		turnPID.setTarget(rotateValue);
-		rotateValue = turnPID.calculate(previousRV);
+//		turnPID.setTarget(rotateValue);
+//		rotateValue = turnPID.calculate(previousRV);
 		previousRV = rotateValue;
 
 		//Mathy arcadey stuffy
@@ -146,12 +149,12 @@ public class DriveBase extends Subsystem {
 		//For all that is good in this world, DO NOT touch or breathe on these
 		//the speed controllers must have the same amount otherwise it will die 
 		//Left side
-		this.CANTalonLeft1.set(leftSpeed);
+		this.TalonSRXLeft1.set(ControlMode.PercentOutput, leftSpeed);
 		//this.CANTalonLeft2.set(leftSpeed);
 		//this.CANTalonLeft3.set(leftSpeed);
 
 		//Right Side
-		this.CANTalonRight4.set(rightSpeed);
+		this.TalonSRXRight4.set(ControlMode.PercentOutput, rightSpeed);
 		//this.CANTalonRight5.set(rightSpeed);
 		//this.CANTalonRight6.set(rightSpeed);
 
@@ -166,5 +169,24 @@ public class DriveBase extends Subsystem {
 	}
 	public void halfSpeedSet(boolean value) {
 		speedHalved = value;
+	}
+	
+	public void setMotionProfileMode() {
+		TalonSRXLeft1.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
+		TalonSRXRight4.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
+	}
+	
+	public void stopFollowMotionProfile() {
+		setMotionProfileMode();
+	}
+	
+	public void startFollowMotionProfile() {
+		TalonSRXLeft1.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
+		TalonSRXRight4.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
+	}
+	
+	public void clearMotionProfile() {
+		TalonSRXLeft1.clearMotionProfileTrajectories();
+		TalonSRXRight4.clearMotionProfileTrajectories();
 	}
 }

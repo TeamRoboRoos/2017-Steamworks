@@ -12,11 +12,12 @@
 package org.usfirst.frc4537.Steam2017V21.subsystems;
 
 import org.usfirst.frc4537.Steam2017V21.Config;
+import org.usfirst.frc4537.Steam2017V21.Robot;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
 import org.usfirst.frc4537.Steam2017V21.libraries.Functions;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -34,8 +36,8 @@ public class Telemetery extends Subsystem {
 	private static final ADXRS450_Gyro gyro = RobotMap.telemeteryGyro;
 	private static final AnalogInput pressure = RobotMap.telemeteryPressure;
 	private static final PowerDistributionPanel powerDistributionPanel = RobotMap.telemeteryPowerDistributionPanel;
-	private static final CANTalon lenc = RobotMap.leftEncoder;
-	private static final CANTalon renc = RobotMap.rightEncoder;
+	private static final TalonSRX lenc = RobotMap.leftEncoder;
+	private static final TalonSRX renc = RobotMap.rightEncoder;
 
 	public static double[] pressureCal = {};
 
@@ -65,11 +67,11 @@ public class Telemetery extends Subsystem {
 	}
 
 	public static double getEncL() {
-		return Functions.encoder(-lenc.getEncPosition());
+		return Functions.encoder(-lenc.getSensorCollection().getQuadraturePosition());
 	}
 
 	public static double getEncR() {
-		return Functions.encoder(renc.getEncPosition());
+		return Functions.encoder(renc.getSensorCollection().getQuadraturePosition());
 	}
 
 	public static NetworkTable getNetTable() {
@@ -78,6 +80,24 @@ public class Telemetery extends Subsystem {
 
 	public static void telemeteryDebug() {
 
+	}
+	
+	public static double[][][] unpackProfile(String profilePath) {
+		return new double[][][] {};
+	}
+	
+	public void debug() {
+//		SmartDashboard.putData(pdp);
+//		System.out.println(pdp);
+//		SmartDashboard.putData("Compressor", compressor);
+		SmartDashboard.putNumber("CompressorCurrent", RobotMap.compressor.getCompressorCurrent());
+		SmartDashboard.putNumber("PDP-12 (L)", powerDistributionPanel.getCurrent(12));
+		SmartDashboard.putNumber("PDP-13 (R)", powerDistributionPanel.getCurrent(13));
+		SmartDashboard.putNumber("PDP-14 (L)", powerDistributionPanel.getCurrent(14));
+		SmartDashboard.putNumber("PDP-15 (R)", powerDistributionPanel.getCurrent(15));
+		SmartDashboard.putNumber("PDP-07 (B)", powerDistributionPanel.getCurrent(7));
+		SmartDashboard.putNumber("PDP-TOTAL", powerDistributionPanel.getTotalCurrent());
+		SmartDashboard.putString("PDP-ENERGY", Double.toString(Math.round(powerDistributionPanel.getTotalEnergy()*100)/100000)+"kJ");
 	}
 
 }

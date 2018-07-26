@@ -48,6 +48,8 @@ public class sdbPut extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
+		Telemetery.telemeteryDebug();
+		
 		pressure = Telemetery.pressureGet();
 		lEncVal = Functions.encoder(Telemetery.getEncL());
 		rEncVal = Functions.encoder(Telemetery.getEncR());

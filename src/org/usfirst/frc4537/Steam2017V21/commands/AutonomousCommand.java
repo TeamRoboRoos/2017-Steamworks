@@ -16,7 +16,7 @@ import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.subsystems.MXP;
 import org.usfirst.frc4537.Steam2017V21.subsystems.Pneumatics;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
  *

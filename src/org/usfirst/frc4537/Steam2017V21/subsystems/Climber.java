@@ -14,7 +14,9 @@ package org.usfirst.frc4537.Steam2017V21.subsystems;
 import org.usfirst.frc4537.Steam2017V21.Config;
 import org.usfirst.frc4537.Steam2017V21.RobotMap;
 import org.usfirst.frc4537.Steam2017V21.commands.*;
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -24,8 +26,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Climber extends Subsystem {
     private final static DigitalInput limitSwitch = RobotMap.climberLimitSwitch;
-    private final static CANTalon climbMotor1 = RobotMap.climbMotor1;
-    private final static CANTalon climbMotor2 = RobotMap.climbMotor2;
+    private final static TalonSRX climbMotor1 = RobotMap.climbMotor1;
+    private final static TalonSRX climbMotor2 = RobotMap.climbMotor2;
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
@@ -35,18 +37,18 @@ public class Climber extends Subsystem {
     }
     
     public static void climbUp() {
-    	climbMotor1.set(-Config.CLIMBER_SPEED);
-    	climbMotor2.set(-Config.CLIMBER_SPEED);
+    	climbMotor1.set(ControlMode.PercentOutput, -Config.CLIMBER_SPEED);
+    	climbMotor2.set(ControlMode.PercentOutput, -Config.CLIMBER_SPEED);
     }
     
     public static void climbDown() {
-    	climbMotor1.set(Config.CLIMBER_SPEED/4);
-    	climbMotor2.set(Config.CLIMBER_SPEED/4);
+    	climbMotor1.set(ControlMode.PercentOutput, Config.CLIMBER_SPEED/4);
+    	climbMotor2.set(ControlMode.PercentOutput, Config.CLIMBER_SPEED/4);
     }
     
     public static void climbStop() {
-    	climbMotor1.set(0);
-    	climbMotor2.set(0);
+    	climbMotor1.set(ControlMode.PercentOutput, 0);
+    	climbMotor2.set(ControlMode.PercentOutput, 0);
     }
     
     public static boolean climbRead() {

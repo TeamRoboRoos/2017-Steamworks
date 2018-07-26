@@ -3,6 +3,7 @@
 	<name>2017-Steamworks</name>
 	<comment></comment>
 	<projects>
+		<project>Utilities</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

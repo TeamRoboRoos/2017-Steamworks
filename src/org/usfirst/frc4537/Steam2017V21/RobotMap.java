@@ -10,8 +10,9 @@
 
 
 package org.usfirst.frc4537.Steam2017V21;
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.TalonControlMode;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -50,17 +51,17 @@ public class RobotMap {
 	public static PowerDistributionPanel telemeteryPowerDistributionPanel;
 
 	//Declare Motors
-	public static CANTalon dlMotor1;
-	public static CANTalon dlMotor2;
-	public static CANTalon dlMotor3;
-	public static CANTalon drMotor4;
-	public static CANTalon drMotor5;
-	public static CANTalon drMotor6;
-	public static CANTalon climbMotor1;
-	public static CANTalon climbMotor2;
+	public static TalonSRX dlMotor1;
+	public static TalonSRX dlMotor2;
+	public static TalonSRX dlMotor3;
+	public static TalonSRX drMotor4;
+	public static TalonSRX drMotor5;
+	public static TalonSRX drMotor6;
+	public static TalonSRX climbMotor1;
+	public static TalonSRX climbMotor2;
 	//Declare encoders
-	public static CANTalon leftEncoder;
-	public static CANTalon rightEncoder;
+	public static TalonSRX leftEncoder;
+	public static TalonSRX rightEncoder;
 	
 	//Declare Serial Ports
 	public static SerialPort arduino;
@@ -68,111 +69,111 @@ public class RobotMap {
 
 	public static void init() {
 		climberLimitSwitch = new DigitalInput(Config.DGI_CLIMBER_SWITCH);
-		LiveWindow.addSensor("Climber", "Limit Switch", climberLimitSwitch);
+		//LiveWindow.addSensor("Climber", "Limit Switch", climberLimitSwitch);
 		
 		mxpI1 = new DigitalInput(Config.DGI_MXP_1);
-		LiveWindow.addSensor("MXP", "In 1", mxpI1);
+		//LiveWindow.addSensor("MXP", "In 1", mxpI1);
 		
 		mxpI2 = new DigitalInput(Config.DGI_MXP_2);
-		LiveWindow.addSensor("MXP", "In 2", mxpI2);
+		//LiveWindow.addSensor("MXP", "In 2", mxpI2);
 		
 		mxpI4 = new DigitalInput(Config.DGI_MXP_4);
-		LiveWindow.addSensor("MXP", "In 4", mxpI4);
+		//LiveWindow.addSensor("MXP", "In 4", mxpI4);
 		
 		mxpI8 = new DigitalInput(Config.DGI_MXP_8);
-		LiveWindow.addSensor("MXP", "In 8", mxpI8);
+		//LiveWindow.addSensor("MXP", "In 8", mxpI8);
 		
 		mxpOWhite = new DigitalOutput(Config.DGO_MXP_WHITE);
-		LiveWindow.addSensor("MXP", "Out White", mxpOWhite);
+		//LiveWindow.addSensor("MXP", "Out White", mxpOWhite);
 		
 		mxpOBlack = new DigitalOutput(Config.DGO_MXP_BLACK);
-		LiveWindow.addActuator("MXP", "Out Black", mxpOBlack);
+		//LiveWindow.addActuator("MXP", "Out Black", mxpOBlack);
 		
 		mxpORL = new DigitalOutput(Config.DGO_MXP_RLEAD); //XXX
-		LiveWindow.addActuator("MXP", "Out R Lead", mxpORL);
+		//LiveWindow.addActuator("MXP", "Out R Lead", mxpORL);
 		
 		mxpOBL = new DigitalOutput(Config.DGO_MXP_BLEAD); //XXX
-		LiveWindow.addActuator("MXP", "Out B Lead", mxpOBL);
+		//LiveWindow.addActuator("MXP", "Out B Lead", mxpOBL);
 
 		telemeteryGyro = new ADXRS450_Gyro(Config.GYRO_PORT);
-		LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);
+		//LiveWindow.addSensor("Telemetary", "Gyro", telemeteryGyro);
 
 		telemeteryAccRio = new BuiltInAccelerometer(Config.ACCELEROMETER_RANGE);
 		//FIXME LiveWindow.addSensor("Telemetary", "Accelerometer", telemeteryAccRio);
 
 		rampSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_RAMP_PORT);
-		LiveWindow.addActuator("Pneumatics", "Solenoid 1", rampSolenoid);
+		//LiveWindow.addActuator("Pneumatics", "Solenoid 1", rampSolenoid);
 
 		flippersSolenoid = new Solenoid(Config.PCM_CAN_PORT, Config.PCM_FLIPPER_PORT);
-		LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);
+		//LiveWindow.addActuator("Pneumatics", "Solenoid 2", flippersSolenoid);
 		
 		compressor = new Compressor(Config.PCM_CAN_PORT);
-		LiveWindow.addActuator("Pneumatics", "Compressor", compressor);
+		//LiveWindow.addActuator("Pneumatics", "Compressor", compressor);
 
 		telemeteryPressure = new AnalogInput(Config.ANI_PRESSURE);
-		LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);
+		//LiveWindow.addSensor("Telemetery", "Pressure", telemeteryPressure);
 
 		telemeteryPowerDistributionPanel = new PowerDistributionPanel(Config.PDP_CAN_PORT);
-		LiveWindow.addSensor("Telemetery", "PowerDistributionPanel", telemeteryPowerDistributionPanel);
+		//LiveWindow.addSensor("Telemetery", "PowerDistributionPanel", telemeteryPowerDistributionPanel);
 
 		//Instatniating the motors
 		//left motors
-		dlMotor1 = new CANTalon(Config.MOTOR_DL_1);
+		dlMotor1 = new TalonSRX(Config.MOTOR_DL_1);
 		//dlMotor1.changeControlMode(TalonControlMode.PercentVbus);
-		dlMotor1.set(0.0);
-		dlMotor1.setExpiration(0.1);
+		dlMotor1.set(ControlMode.PercentOutput, 0.0);
+		//dlMotor1.setExpiration(0.1);
 		dlMotor1.setInverted(true);
 
-		dlMotor2 = new CANTalon(Config.MOTOR_DL_2);
-		dlMotor2.changeControlMode(TalonControlMode.Follower);
-		dlMotor2.set(dlMotor1.getDeviceID());
-		dlMotor2.setExpiration(0.1);
-		//dlMotor2.setInverted(true);
+		dlMotor2 = new TalonSRX(Config.MOTOR_DL_2);
+		//dlMotor2.changeControlMode(TalonControlMode.Follower);
+		dlMotor2.set(ControlMode.Follower, dlMotor1.getDeviceID());
+		//dlMotor2.setExpiration(0.1);
+		dlMotor2.setInverted(true);
 
-		dlMotor3 = new CANTalon(Config.MOTOR_DL_3);
-		dlMotor3.changeControlMode(TalonControlMode.Follower);
-		dlMotor3.set(dlMotor1.getDeviceID());
-		dlMotor3.setExpiration(0.1);
-		//dlMotor3.setInverted(true);
+		dlMotor3 = new TalonSRX(Config.MOTOR_DL_3);
+		//dlMotor3.changeControlMode(TalonControlMode.Follower);
+		dlMotor3.set(ControlMode.Follower, dlMotor1.getDeviceID());
+		//dlMotor3.setExpiration(0.1);
+		dlMotor3.setInverted(true);
 
 		//Right motors
-		drMotor4 = new CANTalon(Config.MOTOR_DR_4);
+		drMotor4 = new TalonSRX(Config.MOTOR_DR_4);
 		//drMotor4.changeControlMode(TalonControlMode.PercentVbus);
-		drMotor4.set(0.0);
-		drMotor4.setExpiration(0.1);
+		drMotor4.set(ControlMode.PercentOutput, 0.0);
+		//drMotor4.setExpiration(0.1);
 
-		drMotor5 = new CANTalon(Config.MOTOR_DR_5);
-		drMotor5.changeControlMode(TalonControlMode.Follower);
-		drMotor5.set(drMotor4.getDeviceID());
-		drMotor5.setExpiration(0.1);
+		drMotor5 = new TalonSRX(Config.MOTOR_DR_5);
+		//drMotor5.changeControlMode(TalonControlMode.Follower);
+		drMotor5.set(ControlMode.Follower, drMotor4.getDeviceID());
+		//drMotor5.setExpiration(0.1);
 
-		drMotor6 = new CANTalon(Config.MOTOR_DR_6);
-		drMotor6.changeControlMode(TalonControlMode.Follower);
-		drMotor6.set(drMotor4.getDeviceID());
-		drMotor6.setExpiration(0.1);
+		drMotor6 = new TalonSRX(Config.MOTOR_DR_6);
+		//drMotor6.changeControlMode(TalonControlMode.Follower);
+		drMotor6.set(ControlMode.Follower, drMotor4.getDeviceID());
+		//drMotor6.setExpiration(0.1);
 		
 		
-		LiveWindow.addActuator("DriveBase", "Drive Left Motor 1", dlMotor1);
+		//LiveWindow.addActuator("DriveBase", "Drive Left Motor 1", dlMotor1);
 		//LiveWindow.addActuator("DriveBase", "Drive Left Motor 2", dlMotor2);
 		//LiveWindow.addActuator("DriveBase", "Drive Left Motor 3", dlMotor3);
-		LiveWindow.addActuator("DriveBase", "Drive Right Motor 4", drMotor4);
+		//LiveWindow.addActuator("DriveBase", "Drive Right Motor 4", drMotor4);
 		//LiveWindow.addActuator("DriveBase", "Drive Right Motor 5", drMotor5);
 		//LiveWindow.addActuator("DriveBase", "Drive Right Motor 6", drMotor6);
 
 		//Climber motors
-		RobotMap.climbMotor1 = new CANTalon(Config.CLIMB_MOTOR_1);
-		RobotMap.climbMotor1.setExpiration(0.1);
-		LiveWindow.addActuator("Climber", "Climb Motor 1", climbMotor1);
+		RobotMap.climbMotor1 = new TalonSRX(Config.CLIMB_MOTOR_1);
+		//RobotMap.climbMotor1.setExpiration(0.1);
+		//LiveWindow.addActuator("Climber", "Climb Motor 1", climbMotor1);
 		
-		RobotMap.climbMotor2 = new CANTalon(Config.CLIMB_MOTOR_2);
-		RobotMap.climbMotor2.setExpiration(0.1);
-		LiveWindow.addActuator("Climber", "Climb Motor 2", climbMotor2); 
+		RobotMap.climbMotor2 = new TalonSRX(Config.CLIMB_MOTOR_2);
+		//RobotMap.climbMotor2.setExpiration(0.1);
+		//LiveWindow.addActuator("Climber", "Climb Motor 2", climbMotor2); 
 		
 		//Encoders
 		RobotMap.leftEncoder = RobotMap.dlMotor3;
-		LiveWindow.addSensor("Encoder", "Left Encoder", leftEncoder);
+		//LiveWindow.addSensor("Encoder", "Left Encoder", leftEncoder);
 		RobotMap.rightEncoder = RobotMap.drMotor4;
-		LiveWindow.addSensor("Encoder", "Right Encoder", rightEncoder);
+		//LiveWindow.addSensor("Encoder", "Right Encoder", rightEncoder);
 		
 		//Serial Port
 		RobotMap.arduino = new SerialPort(Config.ARD_BAUDR, Config.ARD_PORT);
